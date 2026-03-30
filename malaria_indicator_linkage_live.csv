@@ -1,0 +1,124 @@
+clean_label,uid_in_source,dhis2_object_type,matched_query_type,matched_uid,base_name,category_combo_id,category_combo_name,category_option_combo_id,category_option_combo_name
+ANC 1st Visit GA < 20wks,p6aVCk9aN6S,dataElement,operand_linked,p6aVCk9aN6S.zbr2vnRNwAW,ANC 1st Visit ,yzv8MJxvTsE,NH19_Antenatal Gestation_visit ,zbr2vnRNwAW,GA < 20wks
+ANC 1st Visit GA >= 20wks,p6aVCk9aN6S,dataElement,operand_linked,p6aVCk9aN6S.YW7OzKBM90D,ANC 1st Visit ,yzv8MJxvTsE,NH19_Antenatal Gestation_visit ,YW7OzKBM90D,GA ≥ 20wks
+ANC 4th visit,ZS5cAlmGjIE,dataElement,operand_linked,ZS5cAlmGjIE,ANC 4th visit,o9o4xFd6KEm,default,Y2SrnZVI87k,default
+ANC 8th Visit,bGXqql9dyk4,dataElement,operand_linked,bGXqql9dyk4,ANC 8th Visit,o9o4xFd6KEm,default,Y2SrnZVI87k,default
+ANC Attendance 10 - 14yrs,SCDCoP6l9vz,dataElement,operand_linked,SCDCoP6l9vz.VqzZ1Rld9H1,ANC Attendance,eCPII23gfYb,Antenatal attendance by pregnant women ,VqzZ1Rld9H1,10 - 14yrs
+ANC Attendance 15 - 19yrs,SCDCoP6l9vz,dataElement,operand_linked,SCDCoP6l9vz.uYiYP24ADBW,ANC Attendance,eCPII23gfYb,Antenatal attendance by pregnant women ,uYiYP24ADBW, 15 - 19yrs
+ANC Attendance 20 - 34yrs,SCDCoP6l9vz,dataElement,operand_linked,SCDCoP6l9vz.lrTK1Rlll6i,ANC Attendance,eCPII23gfYb,Antenatal attendance by pregnant women ,lrTK1Rlll6i,20 - 34yrs
+ANC Attendance 35 - 49yrs,SCDCoP6l9vz,dataElement,operand_linked,SCDCoP6l9vz.qpL8m6XwJAP,ANC Attendance,eCPII23gfYb,Antenatal attendance by pregnant women ,qpL8m6XwJAP,35 - 49yrs
+ANC Attendance >= 50yrs,SCDCoP6l9vz,dataElement,operand_linked,SCDCoP6l9vz.vRzD2lbRQOg,ANC Attendance,eCPII23gfYb,Antenatal attendance by pregnant women ,vRzD2lbRQOg,≥ 50yrs
+Children <5 yrs who received LLIN,ZFgiCO6nyAP,dataElement,operand_linked,ZFgiCO6nyAP,Children <5 yrs who received LLIN ,o9o4xFd6KEm,default,Y2SrnZVI87k,default
+General Attendance Female 0-28d,Jc1WjNKrObY,dataElement,operand_linked,Jc1WjNKrObY.EeOmMSob3uj,General Attendance,GorBAxlnuXI,"Age(Attendance,Admissions, Deaths) vs Gender",EeOmMSob3uj,"Female, 0-28d"
+General Attendance Female 29d - 11m,Jc1WjNKrObY,dataElement,operand_linked,Jc1WjNKrObY.CyyxhwJfSMe,General Attendance,GorBAxlnuXI,"Age(Attendance,Admissions, Deaths) vs Gender",CyyxhwJfSMe,"Female, 29d - 11m"
+General Attendance Female 12-59m,Jc1WjNKrObY,dataElement,operand_linked,Jc1WjNKrObY.R2LOEyK3TtS,General Attendance,GorBAxlnuXI,"Age(Attendance,Admissions, Deaths) vs Gender",R2LOEyK3TtS,"Female, 12-59m"
+General Attendance Female 5-9yrs,Jc1WjNKrObY,dataElement,operand_linked,Jc1WjNKrObY.HAKkodr9Zu6,General Attendance,GorBAxlnuXI,"Age(Attendance,Admissions, Deaths) vs Gender",HAKkodr9Zu6,"Female, 5-9yrs"
+General Attendance Female 10-19 yrs,Jc1WjNKrObY,dataElement,operand_linked,Jc1WjNKrObY.JDTkdy8801g,General Attendance,GorBAxlnuXI,"Age(Attendance,Admissions, Deaths) vs Gender",JDTkdy8801g,"Female, 10-19 yrs"
+General Attendance Female 20yrs+,Jc1WjNKrObY,dataElement,operand_linked,Jc1WjNKrObY.zi9zkiK4o6p,General Attendance,GorBAxlnuXI,"Age(Attendance,Admissions, Deaths) vs Gender",zi9zkiK4o6p,"Female, 20yrs+"
+General Attendance Male 0-28d,Jc1WjNKrObY,dataElement,operand_linked,Jc1WjNKrObY.IqPaOHcba7Z,General Attendance,GorBAxlnuXI,"Age(Attendance,Admissions, Deaths) vs Gender",IqPaOHcba7Z,"Male, 0-28d"
+General Attendance Male 29d - 11m,Jc1WjNKrObY,dataElement,operand_linked,Jc1WjNKrObY.t07sIn0ECwE,General Attendance,GorBAxlnuXI,"Age(Attendance,Admissions, Deaths) vs Gender",t07sIn0ECwE,"Male, 29d - 11m"
+General Attendance Male 12-59m,Jc1WjNKrObY,dataElement,operand_linked,Jc1WjNKrObY.PCcBygZah1M,General Attendance,GorBAxlnuXI,"Age(Attendance,Admissions, Deaths) vs Gender",PCcBygZah1M,"Male, 12-59m"
+General Attendance Male 5-9yrs,Jc1WjNKrObY,dataElement,operand_linked,Jc1WjNKrObY.GnxpqojQRk0,General Attendance,GorBAxlnuXI,"Age(Attendance,Admissions, Deaths) vs Gender",GnxpqojQRk0,"Male, 5-9yrs"
+General Attendance Male 10-19 yrs,Jc1WjNKrObY,dataElement,operand_linked,Jc1WjNKrObY.YWaq4exqjpt,General Attendance,GorBAxlnuXI,"Age(Attendance,Admissions, Deaths) vs Gender",YWaq4exqjpt,"Male, 10-19 yrs"
+General Attendance Male 20yrs+,Jc1WjNKrObY,dataElement,operand_linked,Jc1WjNKrObY.Fftxx8lnql6,General Attendance,GorBAxlnuXI,"Age(Attendance,Admissions, Deaths) vs Gender",Fftxx8lnql6,"Male, 20yrs+"
+IPT1p,pUZ0BKgsAXp,dataElement,operand_linked,pUZ0BKgsAXp,IPT1p,o9o4xFd6KEm,default,Y2SrnZVI87k,default
+IPT2p,fP1E4qRJ57a,dataElement,operand_linked,fP1E4qRJ57a,IPT2p,o9o4xFd6KEm,default,Y2SrnZVI87k,default
+IPT3p,HGIz6q1NXIS,dataElement,operand_linked,HGIz6q1NXIS,IPT3p,o9o4xFd6KEm,default,Y2SrnZVI87k,default
+IPT>=4,oNUnkTiGK75,dataElement,operand_linked,oNUnkTiGK75,IPT>=4,o9o4xFd6KEm,default,Y2SrnZVI87k,default
+Malaria confirmed pregnant women,DyMyl4NeDxz,dataElement,operand_linked,DyMyl4NeDxz,Malaria confirmed pregnant women,o9o4xFd6KEm,default,Y2SrnZVI87k,default
+Out-patient Attendance Female 0-28d,KWJ3cSuyzs4,dataElement,operand_linked,KWJ3cSuyzs4.EeOmMSob3uj,Out-patient Attendance,GorBAxlnuXI,"Age(Attendance,Admissions, Deaths) vs Gender",EeOmMSob3uj,"Female, 0-28d"
+Out-patient Attendance Female 29d - 11m,KWJ3cSuyzs4,dataElement,operand_linked,KWJ3cSuyzs4.CyyxhwJfSMe,Out-patient Attendance,GorBAxlnuXI,"Age(Attendance,Admissions, Deaths) vs Gender",CyyxhwJfSMe,"Female, 29d - 11m"
+Out-patient Attendance Female 12-59m,KWJ3cSuyzs4,dataElement,operand_linked,KWJ3cSuyzs4.R2LOEyK3TtS,Out-patient Attendance,GorBAxlnuXI,"Age(Attendance,Admissions, Deaths) vs Gender",R2LOEyK3TtS,"Female, 12-59m"
+Out-patient Attendance Female 5-9yrs,KWJ3cSuyzs4,dataElement,operand_linked,KWJ3cSuyzs4.HAKkodr9Zu6,Out-patient Attendance,GorBAxlnuXI,"Age(Attendance,Admissions, Deaths) vs Gender",HAKkodr9Zu6,"Female, 5-9yrs"
+Out-patient Attendance Female 10-19 yrs,KWJ3cSuyzs4,dataElement,operand_linked,KWJ3cSuyzs4.JDTkdy8801g,Out-patient Attendance,GorBAxlnuXI,"Age(Attendance,Admissions, Deaths) vs Gender",JDTkdy8801g,"Female, 10-19 yrs"
+Out-patient Attendance Female 20yrs+,KWJ3cSuyzs4,dataElement,operand_linked,KWJ3cSuyzs4.zi9zkiK4o6p,Out-patient Attendance,GorBAxlnuXI,"Age(Attendance,Admissions, Deaths) vs Gender",zi9zkiK4o6p,"Female, 20yrs+"
+Out-patient Attendance Male 0-28d,KWJ3cSuyzs4,dataElement,operand_linked,KWJ3cSuyzs4.IqPaOHcba7Z,Out-patient Attendance,GorBAxlnuXI,"Age(Attendance,Admissions, Deaths) vs Gender",IqPaOHcba7Z,"Male, 0-28d"
+Out-patient Attendance Male 29d - 11m,KWJ3cSuyzs4,dataElement,operand_linked,KWJ3cSuyzs4.t07sIn0ECwE,Out-patient Attendance,GorBAxlnuXI,"Age(Attendance,Admissions, Deaths) vs Gender",t07sIn0ECwE,"Male, 29d - 11m"
+Out-patient Attendance Male 12-59m,KWJ3cSuyzs4,dataElement,operand_linked,KWJ3cSuyzs4.PCcBygZah1M,Out-patient Attendance,GorBAxlnuXI,"Age(Attendance,Admissions, Deaths) vs Gender",PCcBygZah1M,"Male, 12-59m"
+Out-patient Attendance Male 5-9yrs,KWJ3cSuyzs4,dataElement,operand_linked,KWJ3cSuyzs4.GnxpqojQRk0,Out-patient Attendance,GorBAxlnuXI,"Age(Attendance,Admissions, Deaths) vs Gender",GnxpqojQRk0,"Male, 5-9yrs"
+Out-patient Attendance Male 10-19 yrs,KWJ3cSuyzs4,dataElement,operand_linked,KWJ3cSuyzs4.YWaq4exqjpt,Out-patient Attendance,GorBAxlnuXI,"Age(Attendance,Admissions, Deaths) vs Gender",YWaq4exqjpt,"Male, 10-19 yrs"
+Out-patient Attendance Male 20yrs+,KWJ3cSuyzs4,dataElement,operand_linked,KWJ3cSuyzs4.Fftxx8lnql6,Out-patient Attendance,GorBAxlnuXI,"Age(Attendance,Admissions, Deaths) vs Gender",Fftxx8lnql6,"Male, 20yrs+"
+PW who received LLIN,w6nOgEFHWMG,dataElement,operand_linked,w6nOgEFHWMG,PW who received LLIN,o9o4xFd6KEm,default,Y2SrnZVI87k,default
+Patients Admitted Female 0-28d,rXoqTMxWvfR,dataElement,operand_linked,rXoqTMxWvfR.nZRrMRBxq8i,Patients Admitted,ojp2gQluuaS,Facility Attendance Gender vs Age,nZRrMRBxq8i,"Female, 0-28d"
+Patients Admitted Female 29d - 11m,rXoqTMxWvfR,dataElement,operand_linked,rXoqTMxWvfR.deFv7A7iQbB,Patients Admitted,ojp2gQluuaS,Facility Attendance Gender vs Age,deFv7A7iQbB,"Female, 29d - 11m"
+Patients Admitted Female 12-59m,rXoqTMxWvfR,dataElement,operand_linked,rXoqTMxWvfR.qbNAG4G0vZz,Patients Admitted,ojp2gQluuaS,Facility Attendance Gender vs Age,qbNAG4G0vZz,"Female, 12-59m"
+Patients Admitted Female 5-9yrs,rXoqTMxWvfR,dataElement,operand_linked,rXoqTMxWvfR.BaK42evgoO9,Patients Admitted,ojp2gQluuaS,Facility Attendance Gender vs Age,BaK42evgoO9,"Female, 5-9yrs"
+Patients Admitted Female 10-19 yrs,rXoqTMxWvfR,dataElement,operand_linked,rXoqTMxWvfR.xzhG6CUxp5z,Patients Admitted,ojp2gQluuaS,Facility Attendance Gender vs Age,xzhG6CUxp5z,"Female, 10-19 yrs"
+Patients Admitted Female 20yrs+,rXoqTMxWvfR,dataElement,operand_linked,rXoqTMxWvfR.nZnQrgxuY7T,Patients Admitted,ojp2gQluuaS,Facility Attendance Gender vs Age,nZnQrgxuY7T,"Female, 20yrs+"
+Patients Admitted Male 0-28d,rXoqTMxWvfR,dataElement,operand_linked,rXoqTMxWvfR.fyfTiHgF9vo,Patients Admitted,ojp2gQluuaS,Facility Attendance Gender vs Age,fyfTiHgF9vo,"Male, 0-28d"
+Patients Admitted Male 29d - 11m,rXoqTMxWvfR,dataElement,operand_linked,rXoqTMxWvfR.sZCbZ25d7MW,Patients Admitted,ojp2gQluuaS,Facility Attendance Gender vs Age,sZCbZ25d7MW,"Male, 29d - 11m"
+Patients Admitted Male 12-59m,rXoqTMxWvfR,dataElement,operand_linked,rXoqTMxWvfR.jKZ1JvWa0bo,Patients Admitted,ojp2gQluuaS,Facility Attendance Gender vs Age,jKZ1JvWa0bo,"Male, 12-59m"
+Patients Admitted Male 5-9yrs,rXoqTMxWvfR,dataElement,operand_linked,rXoqTMxWvfR.unpTbKdJQtF,Patients Admitted,ojp2gQluuaS,Facility Attendance Gender vs Age,unpTbKdJQtF,"Male, 5-9yrs"
+Patients Admitted Male 10-19 yrs,rXoqTMxWvfR,dataElement,operand_linked,rXoqTMxWvfR.kLhZbBLJkpW,Patients Admitted,ojp2gQluuaS,Facility Attendance Gender vs Age,kLhZbBLJkpW,"Male, 10-19 yrs"
+Patients Admitted Male 20yrs+,rXoqTMxWvfR,dataElement,operand_linked,rXoqTMxWvfR.mMPO7frYVtx,Patients Admitted,ojp2gQluuaS,Facility Attendance Gender vs Age,mMPO7frYVtx,"Male, 20yrs+"
+Persons Clinically diagnosed with Malaria treated with ACT <5yrs,nDKVffS3ijX,dataElement,operand_linked,nDKVffS3ijX.W50DgZrPrUk,Persons Clinically diagnosed with Malaria treated with ACT,TosejJ3g1rK,NH19_Malaria Testing,W50DgZrPrUk,<5yrs
+Persons Clinically diagnosed with Malaria treated with ACT >=5yrs (excl PW),nDKVffS3ijX,dataElement,operand_linked,nDKVffS3ijX.v0QZcUTuyjD,Persons Clinically diagnosed with Malaria treated with ACT,TosejJ3g1rK,NH19_Malaria Testing,v0QZcUTuyjD, ≥5yrs (excl PW)
+Persons Clinically diagnosed with Malaria treated with ACT PW,nDKVffS3ijX,dataElement,operand_linked,nDKVffS3ijX.V86mzY788hR,Persons Clinically diagnosed with Malaria treated with ACT,TosejJ3g1rK,NH19_Malaria Testing,V86mzY788hR,Preg Women (PW)
+Persons fever tested by RDT <5yrs,r6WOvUlcQm6,dataElement,operand_linked,r6WOvUlcQm6.W50DgZrPrUk,Persons presenting with fever & tested by RDT,TosejJ3g1rK,NH19_Malaria Testing,W50DgZrPrUk,<5yrs
+Persons fever tested by RDT >=5yrs (excl PW),r6WOvUlcQm6,dataElement,operand_linked,r6WOvUlcQm6.v0QZcUTuyjD,Persons presenting with fever & tested by RDT,TosejJ3g1rK,NH19_Malaria Testing,v0QZcUTuyjD, ≥5yrs (excl PW)
+Persons fever tested by RDT PW,r6WOvUlcQm6,dataElement,operand_linked,r6WOvUlcQm6.V86mzY788hR,Persons presenting with fever & tested by RDT,TosejJ3g1rK,NH19_Malaria Testing,V86mzY788hR,Preg Women (PW)
+Persons fever tested by Microscopy <5yrs,k2Cpuz9BQtD,dataElement,operand_linked,k2Cpuz9BQtD.W50DgZrPrUk,Persons presenting with fever and tested by Microscopy,TosejJ3g1rK,NH19_Malaria Testing,W50DgZrPrUk,<5yrs
+Persons fever tested by Microscopy >=5yrs (excl PW),k2Cpuz9BQtD,dataElement,operand_linked,k2Cpuz9BQtD.v0QZcUTuyjD,Persons presenting with fever and tested by Microscopy,TosejJ3g1rK,NH19_Malaria Testing,v0QZcUTuyjD, ≥5yrs (excl PW)
+Persons fever tested by Microscopy PW,k2Cpuz9BQtD,dataElement,operand_linked,k2Cpuz9BQtD.V86mzY788hR,Persons presenting with fever and tested by Microscopy,TosejJ3g1rK,NH19_Malaria Testing,V86mzY788hR,Preg Women (PW)
+Positive by Microscopy <5yrs,G7iWnz9RMy9,dataElement,operand_linked,G7iWnz9RMy9.W50DgZrPrUk,Persons tested positive for malaria by Microscopy,TosejJ3g1rK,NH19_Malaria Testing,W50DgZrPrUk,<5yrs
+Positive by Microscopy >=5yrs (excl PW),G7iWnz9RMy9,dataElement,operand_linked,G7iWnz9RMy9.v0QZcUTuyjD,Persons tested positive for malaria by Microscopy,TosejJ3g1rK,NH19_Malaria Testing,v0QZcUTuyjD, ≥5yrs (excl PW)
+Positive by Microscopy PW,G7iWnz9RMy9,dataElement,operand_linked,G7iWnz9RMy9.V86mzY788hR,Persons tested positive for malaria by Microscopy,TosejJ3g1rK,NH19_Malaria Testing,V86mzY788hR,Preg Women (PW)
+Positive by RDT <5yrs,GEd2F6skCpT,dataElement,operand_linked,GEd2F6skCpT.W50DgZrPrUk,Persons tested positive for malaria by RDT,TosejJ3g1rK,NH19_Malaria Testing,W50DgZrPrUk,<5yrs
+Positive by RDT >=5yrs (excl PW),GEd2F6skCpT,dataElement,operand_linked,GEd2F6skCpT.v0QZcUTuyjD,Persons tested positive for malaria by RDT,TosejJ3g1rK,NH19_Malaria Testing,v0QZcUTuyjD, ≥5yrs (excl PW)
+Positive by RDT PW,GEd2F6skCpT,dataElement,operand_linked,GEd2F6skCpT.V86mzY788hR,Persons tested positive for malaria by RDT,TosejJ3g1rK,NH19_Malaria Testing,V86mzY788hR,Preg Women (PW)
+Confirmed Uncomplicated treated with ACT <5yrs,ouzURM9c1FI,dataElement,operand_linked,ouzURM9c1FI.W50DgZrPrUk,Persons with Confirmed Uncomplicated Malaria treated with ACT,TosejJ3g1rK,NH19_Malaria Testing,W50DgZrPrUk,<5yrs
+Confirmed Uncomplicated treated with ACT >=5yrs (excl PW),ouzURM9c1FI,dataElement,operand_linked,ouzURM9c1FI.v0QZcUTuyjD,Persons with Confirmed Uncomplicated Malaria treated with ACT,TosejJ3g1rK,NH19_Malaria Testing,v0QZcUTuyjD, ≥5yrs (excl PW)
+Confirmed Uncomplicated treated with ACT PW,ouzURM9c1FI,dataElement,operand_linked,ouzURM9c1FI.V86mzY788hR,Persons with Confirmed Uncomplicated Malaria treated with ACT,TosejJ3g1rK,NH19_Malaria Testing,V86mzY788hR,Preg Women (PW)
+Treated with other antimalarials <5yrs,M1kGBHgqGvv,dataElement,operand_linked,M1kGBHgqGvv.W50DgZrPrUk,Persons with Confirmed Uncomplicated Malaria treated with other antimalarials,TosejJ3g1rK,NH19_Malaria Testing,W50DgZrPrUk,<5yrs
+Treated with other antimalarials >=5yrs (excl PW),M1kGBHgqGvv,dataElement,operand_linked,M1kGBHgqGvv.v0QZcUTuyjD,Persons with Confirmed Uncomplicated Malaria treated with other antimalarials,TosejJ3g1rK,NH19_Malaria Testing,v0QZcUTuyjD, ≥5yrs (excl PW)
+Treated with other antimalarials PW,M1kGBHgqGvv,dataElement,operand_linked,M1kGBHgqGvv.V86mzY788hR,Persons with Confirmed Uncomplicated Malaria treated with other antimalarials,TosejJ3g1rK,NH19_Malaria Testing,V86mzY788hR,Preg Women (PW)
+Severe Malaria pre-referral treatment <5yrs,fFe9CPuM7Xz,dataElement,operand_linked,fFe9CPuM7Xz.Bl7e1tsRGoZ,Persons with Severe Malaria given recommended pre-referral treatment,TosejJ3g1rK,NH19_Malaria Testing,Bl7e1tsRGoZ,<5yrs
+Severe Malaria pre-referral treatment >=5yrs (excl PW),fFe9CPuM7Xz,dataElement,operand_linked,fFe9CPuM7Xz.v0QZcUTuyjD,Persons with Severe Malaria given recommended pre-referral treatment,TosejJ3g1rK,NH19_Malaria Testing,v0QZcUTuyjD, ≥5yrs (excl PW)
+Severe Malaria pre-referral treatment PW,fFe9CPuM7Xz,dataElement,operand_linked,fFe9CPuM7Xz.V86mzY788hR,Persons with Severe Malaria given recommended pre-referral treatment,TosejJ3g1rK,NH19_Malaria Testing,V86mzY788hR,Preg Women (PW)
+Severe Malaria treated with Artesunate inj <5yrs,Nz9eV0G9qTW,dataElement,operand_linked,Nz9eV0G9qTW.Bl7e1tsRGoZ,Persons with Severe Malaria treated with Artesunate injection,TosejJ3g1rK,NH19_Malaria Testing,Bl7e1tsRGoZ,<5yrs
+Severe Malaria treated with Artesunate inj >=5yrs (excl PW),Nz9eV0G9qTW,dataElement,operand_linked,Nz9eV0G9qTW.v0QZcUTuyjD,Persons with Severe Malaria treated with Artesunate injection,TosejJ3g1rK,NH19_Malaria Testing,v0QZcUTuyjD, ≥5yrs (excl PW)
+Severe Malaria treated with Artesunate inj PW,Nz9eV0G9qTW,dataElement,operand_linked,Nz9eV0G9qTW.V86mzY788hR,Persons with Severe Malaria treated with Artesunate injection,TosejJ3g1rK,NH19_Malaria Testing,V86mzY788hR,Preg Women (PW)
+Severe Malaria other pre-referral treatment <5yrs,ilSvQ0EwZVJ,dataElement,operand_linked,ilSvQ0EwZVJ.Bl7e1tsRGoZ,Persons with Severe Malaria treated with other pre referral treatment,TosejJ3g1rK,NH19_Malaria Testing,Bl7e1tsRGoZ,<5yrs
+Severe Malaria other pre-referral treatment >=5yrs (excl PW),ilSvQ0EwZVJ,dataElement,operand_linked,ilSvQ0EwZVJ.v0QZcUTuyjD,Persons with Severe Malaria treated with other pre referral treatment,TosejJ3g1rK,NH19_Malaria Testing,v0QZcUTuyjD, ≥5yrs (excl PW)
+Severe Malaria other pre-referral treatment PW,ilSvQ0EwZVJ,dataElement,operand_linked,ilSvQ0EwZVJ.V86mzY788hR,Persons with Severe Malaria treated with other pre referral treatment,TosejJ3g1rK,NH19_Malaria Testing,V86mzY788hR,Preg Women (PW)
+Clinically diagnosed Malaria <5yrs,K9K1G0XX4ax,dataElement,operand_linked,K9K1G0XX4ax.W50DgZrPrUk,Persons with clinically diagnosed Malaria,TosejJ3g1rK,NH19_Malaria Testing,W50DgZrPrUk,<5yrs
+Clinically diagnosed Malaria >=5yrs (excl PW),K9K1G0XX4ax,dataElement,operand_linked,K9K1G0XX4ax.v0QZcUTuyjD,Persons with clinically diagnosed Malaria,TosejJ3g1rK,NH19_Malaria Testing,v0QZcUTuyjD, ≥5yrs (excl PW)
+Clinically diagnosed Malaria PW,K9K1G0XX4ax,dataElement,operand_linked,K9K1G0XX4ax.V86mzY788hR,Persons with clinically diagnosed Malaria,TosejJ3g1rK,NH19_Malaria Testing,V86mzY788hR,Preg Women (PW)
+Confirmed uncomplicated Malaria <5yrs,HdtaLx63988,dataElement,operand_linked,HdtaLx63988.W50DgZrPrUk,Persons with confirmed uncomplicated Malaria,TosejJ3g1rK,NH19_Malaria Testing,W50DgZrPrUk,<5yrs
+Confirmed uncomplicated Malaria >=5yrs (excl PW),HdtaLx63988,dataElement,operand_linked,HdtaLx63988.v0QZcUTuyjD,Persons with confirmed uncomplicated Malaria,TosejJ3g1rK,NH19_Malaria Testing,v0QZcUTuyjD, ≥5yrs (excl PW)
+Confirmed uncomplicated Malaria PW,HdtaLx63988,dataElement,operand_linked,HdtaLx63988.V86mzY788hR,Persons with confirmed uncomplicated Malaria,TosejJ3g1rK,NH19_Malaria Testing,V86mzY788hR,Preg Women (PW)
+Persons with fever <5yrs,m5gTF1jKQjl,dataElement,operand_linked,m5gTF1jKQjl.W50DgZrPrUk,Persons with fever,TosejJ3g1rK,NH19_Malaria Testing,W50DgZrPrUk,<5yrs
+Persons with fever >=5yrs (excl PW),m5gTF1jKQjl,dataElement,operand_linked,m5gTF1jKQjl.v0QZcUTuyjD,Persons with fever,TosejJ3g1rK,NH19_Malaria Testing,v0QZcUTuyjD, ≥5yrs (excl PW)
+Persons with fever PW,m5gTF1jKQjl,dataElement,operand_linked,m5gTF1jKQjl.V86mzY788hR,Persons with fever,TosejJ3g1rK,NH19_Malaria Testing,V86mzY788hR,Preg Women (PW)
+Pregnant women clinical malaria,f0YCEriaGQC,dataElement,operand_linked,f0YCEriaGQC,Pregnant women with clinical malaria,o9o4xFd6KEm,default,Y2SrnZVI87k,default
+Severe Malaria cases seen <5yrs,nrql7kywMLM,dataElement,operand_linked,nrql7kywMLM.W50DgZrPrUk,Severe Malaria cases seen,TosejJ3g1rK,NH19_Malaria Testing,W50DgZrPrUk,<5yrs
+Severe Malaria cases seen >=5yrs (excl PW),nrql7kywMLM,dataElement,operand_linked,nrql7kywMLM.v0QZcUTuyjD,Severe Malaria cases seen,TosejJ3g1rK,NH19_Malaria Testing,v0QZcUTuyjD, ≥5yrs (excl PW)
+Severe Malaria cases seen PW,nrql7kywMLM,dataElement,operand_linked,nrql7kywMLM.V86mzY788hR,Severe Malaria cases seen,TosejJ3g1rK,NH19_Malaria Testing,V86mzY788hR,Preg Women (PW)
+% Confirmed Malaria (RDT or Microscopy),QeQ7Axn5JZT,indicator,indicator_only,QeQ7Axn5JZT,% Confirmed Malaria (RDT or Microscopy),,,,
+% Confirmed uncomplicated Malaria,IDvOsgRb9vK,indicator,indicator_only,IDvOsgRb9vK,% Confirmed uncomplicated Malaria,,,,
+% Under 5 receiving LLIN,JwWA5uLA3NV,indicator,indicator_only,JwWA5uLA3NV,% Under 5 receiving LLIN,,,,
+% of Antenatal 1st Visits receiving IPT1,pPTpnHWnpTu,indicator,indicator_only,pPTpnHWnpTu,% of Antenatal 1st Visits receiving IPT1,,,,
+% of Antenatal 1st Visits receiving LLIN,PU87QXkUyyf,indicator,indicator_only,PU87QXkUyyf,% of Antenatal 1st Visits receiving LLIN,,,,
+% of Antimalaria with mobile authentication service,LbRUm5ZRqHY,indicator,indicator_only,LbRUm5ZRqHY,% of Antimalaria with mobile authentication service,,,,
+% of Fever cases Tested with Microscopy,C2uGy964KNe,indicator,indicator_only,C2uGy964KNe,% of Fever cases Tested with Microscopy,,,,
+% of Fever cases Tested with RDT,quCqGMTBTHi,indicator,indicator_only,quCqGMTBTHi,% of Fever cases Tested with RDT,,,,
+% of Fever cases tested positive with Microscopy,WAywN48snnd,indicator,indicator_only,WAywN48snnd,% of Fever cases tested positive with Microscopy,,,,
+% of Fever cases tested positive with RDT,l2eIpdluuTI,indicator,indicator_only,l2eIpdluuTI,% of Fever cases tested positive with RDT,,,,
+% of Malaria cases clinically diagnosed,vYRF9XQAt6t,indicator,indicator_only,vYRF9XQAt6t,% of Malaria cases clinically diagnosed,,,,
+% of Under 5 deaths attributable to Malaria,ktsIGwM8eKk,indicator,indicator_only,ktsIGwM8eKk,% of Under 5 deaths attributable to Malaria,,,,
+% of all Antenatal care clients receiving malaria IPT,hIPXrhZupqY,indicator,indicator_only,hIPXrhZupqY,% of all Antenatal care clients receiving malaria IPT,,,,
+% of clinically diagnosed malaria given ACT,PFHeLBDLciz,indicator,indicator_only,PFHeLBDLciz,% of clinically diagnosed malaria given ACT,,,,
+% of confirmed uncomplicated malaria given ACT,acmdhxLWZb2,indicator,indicator_only,acmdhxLWZb2,% of confirmed uncomplicated malaria given ACT,,,,
+% of confirmed uncomplicated malaria given other antimalaria,i0gr75yDEx0,indicator,indicator_only,i0gr75yDEx0,% of confirmed uncomplicated malaria given other antimalaria,,,,
+% of suspected malaria receiving parasitological test,mWT59jwbd9c,indicator,indicator_only,mWT59jwbd9c,% of suspected malaria receiving parasitological test,,,,
+ACT Given - Total,DHYTgg54tAE,indicator,indicator_only,DHYTgg54tAE,ACT Given - Total,,,,
+Fever Testing Rate,I0i6aUfBxii,indicator,indicator_only,I0i6aUfBxii,Fever Testing Rate,,,,
+IPTp1 Coverage (institutional),hohHPLpnfnU,indicator,indicator_only,hohHPLpnfnU,IPTp1 Coverage (institutional),,,,
+IPTp2 Coverage (institutional),LiwGUzxMbRV,indicator,indicator_only,LiwGUzxMbRV,IPTp2 Coverage (institutional),,,,
+IPTp3 Coverage (institutional),kxWKowbQ1si,indicator,indicator_only,kxWKowbQ1si,IPTp3 Coverage (institutional),,,,
+IPTp>=4 Coverage (institutional),VaPXm80AYwo,indicator,indicator_only,VaPXm80AYwo,IPTp>=4 Coverage (institutional),,,,
+LLIN given - Total,IZgNib2WHSD,indicator,indicator_only,IZgNib2WHSD,LLIN given - Total,,,,
+Persons with Severe Malaria treated with Artesunate injection,im9L3qLI4g9,indicator,indicator_only,im9L3qLI4g9,Persons with Severe Malaria treated with Artesunate injection ,,,,
+Persons with Severe Malaria treated with other pre referral treatment,oZ892qhp8kg,indicator,indicator_only,oZ892qhp8kg,Persons with Severe Malaria treated with other pre referral treatment,,,,
+Test Positivity Rate(TPR) (Microscopy),vtKan5xpKdh,indicator,indicator_only,vtKan5xpKdh,Test Positivity Rate(TPR) (Microscopy),,,,
+Test Positivity Rate(TPR) (RDT),uiA07P72s2Z,indicator,indicator_only,uiA07P72s2Z,Test Positivity Rate(TPR) (RDT),,,,

@@ -1,0 +1,62 @@
+{
+  "catalog_count": 123,
+  "dhis2_base": "https://dhis2nigeria.org.ng/dhis",
+  "dhis2_info": {
+    "buildTime": "2025-09-08T11:54:18.000",
+    "calendar": "iso8601",
+    "contextPath": "https://dhis2nigeria.org.ng/dhis",
+    "databaseInfo": {
+      "spatialSupport": true
+    },
+    "dateFormat": "yyyy-mm-dd",
+    "emailConfigured": true,
+    "encryption": false,
+    "intervalSinceLastAnalyticsTableSuccess": "24 h, 6 m, 51 s",
+    "isMetadataVersionEnabled": true,
+    "lastAnalyticsTableRuntime": "00:43:03.296",
+    "lastAnalyticsTableSuccess": "2026-03-29T01:00:00.015",
+    "redisEnabled": false,
+    "revision": "574b7cf",
+    "serverDate": "2026-03-30T01:06:51.365",
+    "serverTimeZoneDisplayName": "West Africa Standard Time",
+    "serverTimeZoneId": "Africa/Lagos",
+    "systemId": "6c4d77b6-8ece-414d-8452-771944adde93",
+    "systemName": "Health Management Information System",
+    "userAgent": "dhis2-malaria-dashboard/1.0",
+    "version": "2.40.9"
+  },
+  "last_attempt_at": "2026-03-30T00:12:11.350159+00:00",
+  "last_error": null,
+  "last_success_at": "2026-03-30T00:12:11.350918+00:00",
+  "linkage_file": "malaria_indicator_linkage_live.csv",
+  "linkage_loaded": true,
+  "status": "connected",
+  "unique_query_uids": 123,
+  "validated_uids": [
+    {
+      "ok": true,
+      "uid": "p6aVCk9aN6S.zbr2vnRNwAW"
+    },
+    {
+      "ok": true,
+      "uid": "Jc1WjNKrObY.EeOmMSob3uj"
+    },
+    {
+      "ok": true,
+      "uid": "r6WOvUlcQm6.V86mzY788hR"
+    },
+    {
+      "ok": true,
+      "uid": "fFe9CPuM7Xz.V86mzY788hR"
+    },
+    {
+      "ok": true,
+      "uid": "IZgNib2WHSD"
+    },
+    {
+      "ok": true,
+      "uid": "QeQ7Axn5JZT"
+    }
+  ],
+  "validation_mode": "sample"
+}

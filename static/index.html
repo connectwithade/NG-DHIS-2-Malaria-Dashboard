@@ -1,0 +1,1930 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nigeria Malaria Dashboard — DHIS2 Live</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<style>
+:root {
+  --bg: #0e1117;
+  --sidebar: #111827;
+  --surface: #161b27;
+  --surface2: #1e2635;
+  --border: #2a3347;
+  --accent: #118DFF;
+  --accent2: #12B0A0;
+  --accent3: #E8A838;
+  --accent4: #E6534F;
+  --accent5: #8764B8;
+  --green: #12B86C;
+  --red: #E6534F;
+  --text: #e8eaf0;
+  --text-muted: #8892a4;
+  --sidebar-w: 280px;
+  --header-h: 56px;
+  --radius: 10px;
+  --shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; display: flex; flex-direction: column; overflow: hidden; }
+
+/* ── HEADER ── */
+.header {
+  height: var(--header-h); min-height: var(--header-h);
+  background: linear-gradient(90deg, #0a2342 0%, #0d1f3c 50%, #0e1117 100%);
+  border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 0 20px; z-index: 200;
+}
+.header-left { display: flex; align-items: center; gap: 12px; }
+.logo { width: 30px; height: 30px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: #fff; }
+.header-title { font-size: 15px; font-weight: 700; color: #fff; }
+.header-sub { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
+.header-center { display: flex; align-items: center; gap: 10px; }
+.brand-strip { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 999px; background: rgba(255,255,255,0.03); }
+.brand-logo { height: 18px; width: auto; display: block; object-fit: contain; }
+.brand-plus { color: var(--text-muted); font-size: 11px; font-weight: 700; }
+.brand-path-wrap {
+  display: flex;
+  align-items: center;
+  padding: 3px 8px;
+  background: rgba(255,255,255,0.96);
+  border-radius: 999px;
+}
+.brand-path { height: 14px; }
+.header-right { display: flex; align-items: center; gap: 10px; }
+.status-dot { width: 8px; height: 8px; border-radius: 50%; }
+.status-dot.online { background: var(--green); box-shadow: 0 0 6px var(--green); }
+.status-dot.offline { background: var(--red); }
+.status-dot.loading { background: var(--accent3); animation: pulse 1s infinite; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+.status-label { font-size: 11px; color: var(--text-muted); }
+.btn-refresh { background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); padding: 5px 12px; border-radius: 6px; font-size: 11px; cursor: pointer; transition: all 0.2s; }
+.btn-refresh:hover { border-color: var(--accent); color: var(--accent); }
+.last-sync { font-size: 10px; color: var(--text-muted); }
+
+/* ── BODY LAYOUT ── */
+.body-wrap { display: flex; flex: 1; overflow: hidden; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w); min-width: var(--sidebar-w);
+  background: var(--sidebar);
+  border-right: 1px solid var(--border);
+  overflow-y: auto; overflow-x: hidden;
+  display: flex; flex-direction: column;
+}
+.sidebar-footer {
+  margin-top: auto;
+  padding: 16px 14px 18px;
+  border-top: 1px solid var(--border);
+  color: var(--text-muted);
+  font-size: 10px;
+  line-height: 1.6;
+}
+.love-icon {
+  color: #ff4d4f;
+  font-style: normal;
+}
+.sidebar-section { padding: 14px 14px 6px; }
+.sidebar-section-title {
+  font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.8px; color: var(--text-muted); margin-bottom: 10px;
+  display: flex; align-items: center; gap: 6px;
+}
+.sidebar-section-title::after { content:''; flex:1; height:1px; background: var(--border); }
+
+.filter-label { font-size: 11px; color: var(--text-muted); font-weight: 500; margin-bottom: 5px; }
+.filter-select {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); border-radius: 6px; padding: 7px 10px; font-size: 12px;
+  cursor: pointer; outline: none; margin-bottom: 10px;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%238892a4'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
+}
+.filter-select option { background: #1e2635; }
+.filter-multiselect option:checked {
+  background: linear-gradient(0deg, var(--accent), var(--accent));
+  color: #fff;
+}
+.filter-multiselect:focus option:checked {
+  background: linear-gradient(0deg, var(--accent), var(--accent));
+  color: #fff;
+}
+.filter-multiselect {
+  min-height: 112px;
+  background-image: none;
+  padding-right: 10px;
+}
+.filter-hint {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin: -4px 0 8px;
+}
+.toggle-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 11px;
+  color: var(--text-muted);
+}
+.toggle-row input {
+  accent-color: var(--accent);
+}
+
+/* Multi-select indicator list */
+.indicator-search {
+  width: 100%; background: var(--surface2); border: 1px solid var(--border);
+  color: var(--text); border-radius: 6px; padding: 7px 10px; font-size: 12px;
+  outline: none; margin-bottom: 8px;
+}
+.indicator-search::placeholder { color: var(--text-muted); }
+
+.indicator-list-wrap {
+  background: var(--surface2); border: 1px solid var(--border);
+  border-radius: 6px; overflow: hidden; margin-bottom: 10px;
+}
+.indicator-group-header {
+  padding: 6px 10px; font-size: 10px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.5px; color: var(--text-muted); background: rgba(0,0,0,0.2);
+  cursor: pointer; display: flex; align-items: center; justify-content: space-between;
+  user-select: none;
+}
+.indicator-group-header:hover { background: rgba(17,141,255,0.08); }
+.group-arrow { transition: transform 0.2s; }
+.group-arrow.open { transform: rotate(90deg); }
+.indicator-group-items { display: none; }
+.indicator-group-items.open { display: block; }
+.indicator-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 6px 10px; cursor: pointer;
+  transition: background 0.15s; font-size: 12px; color: var(--text);
+}
+.indicator-item:hover { background: rgba(17,141,255,0.1); }
+.indicator-item.selected { background: rgba(17,141,255,0.15); color: var(--accent); }
+.cb { width: 13px; height: 13px; border: 1.5px solid var(--border); border-radius: 3px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
+.indicator-item.selected .cb { background: var(--accent); border-color: var(--accent); }
+.cb-check { color: #fff; font-size: 9px; display: none; }
+.indicator-item.selected .cb-check { display: block; }
+
+.selected-count {
+  font-size: 11px; color: var(--accent); text-align: center; margin-bottom: 4px;
+}
+.btn-apply {
+  width: 100%; background: var(--accent); border: none; color: white;
+  padding: 8px; border-radius: 6px; font-size: 12px; font-weight: 600;
+  cursor: pointer; transition: opacity 0.2s; margin-bottom: 6px;
+}
+.btn-apply:hover { opacity: 0.85; }
+.btn-clear-sel {
+  width: 100%; background: transparent; border: 1px solid var(--border);
+  color: var(--text-muted); padding: 6px; border-radius: 6px; font-size: 11px;
+  cursor: pointer; transition: all 0.2s;
+}
+.btn-clear-sel:hover { border-color: var(--red); color: var(--red); }
+
+/* ── MAIN CONTENT ── */
+.main {
+  flex: 1; overflow-y: auto; overflow-x: hidden;
+  padding: 16px 20px 24px;
+  display: flex; flex-direction: column; gap: 14px;
+}
+
+/* ── BANNER ── */
+.banner {
+  background: linear-gradient(135deg, rgba(17,141,255,0.12) 0%, rgba(18,176,160,0.08) 100%);
+  border: 1px solid rgba(17,141,255,0.25); border-radius: var(--radius);
+  padding: 12px 16px; display: flex; align-items: center; gap: 12px;
+}
+.banner-icon { font-size: 22px; }
+.banner-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.banner-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.banner-tags { display: flex; gap: 6px; flex-wrap: wrap; margin-top: 6px; }
+.tag { background: rgba(17,141,255,0.15); border: 1px solid rgba(17,141,255,0.2); color: var(--accent); padding: 2px 8px; border-radius: 12px; font-size: 10px; font-weight: 600; }
+.tag.g { background: rgba(18,176,160,0.15); border-color: rgba(18,176,160,0.25); color: var(--accent2); }
+.tag.o { background: rgba(232,168,56,0.15); border-color: rgba(232,168,56,0.25); color: var(--accent3); }
+.tag.r { background: rgba(230,83,79,0.15); border-color: rgba(230,83,79,0.25); color: var(--accent4); }
+
+/* ── SECTION HEADERS ── */
+.section-header {
+  display: flex; align-items: center; gap: 10px; margin-bottom: 2px;
+}
+.section-label {
+  font-size: 12px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: 0.6px; color: var(--text-muted);
+}
+.section-line { flex: 1; height: 1px; background: var(--border); }
+.section-badge {
+  font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 10px;
+}
+.sb-prevention { background: rgba(18,176,160,0.15); color: var(--accent2); }
+.sb-diagnosis   { background: rgba(17,141,255,0.15); color: var(--accent); }
+.sb-treatment   { background: rgba(232,168,56,0.15); color: var(--accent3); }
+.sb-impact      { background: rgba(230,83,79,0.15);  color: var(--accent4); }
+
+/* ── KPI CARDS ── */
+.kpi-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; }
+.kpi-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 14px 16px;
+  position: relative; overflow: hidden; transition: transform 0.2s, box-shadow 0.2s;
+}
+.kpi-card:hover { transform: translateY(-2px); box-shadow: var(--shadow); }
+.kpi-card::before { content:''; position:absolute; top:0; left:0; right:0; height:3px; }
+.kpi-c1::before { background: var(--accent2); }
+.kpi-c2::before { background: var(--accent); }
+.kpi-c3::before { background: var(--accent3); }
+.kpi-c4::before { background: var(--accent4); }
+.kpi-label { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 6px; }
+.kpi-value { font-size: 22px; font-weight: 700; color: var(--text); line-height: 1; }
+.kpi-sub { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+.kpi-change { font-size: 11px; font-weight: 600; margin-top: 4px; }
+.kpi-change.up { color: var(--green); }
+.kpi-change.down { color: var(--red); }
+.skeleton { background: linear-gradient(90deg, var(--surface2) 25%, var(--border) 50%, var(--surface2) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 4px; height: 24px; }
+@keyframes shimmer { 0%{background-position:200% 0} 100%{background-position:-200% 0} }
+
+/* ── CHART CARDS ── */
+.chart-row { display: grid; gap: 12px; }
+.chart-row.c2 { grid-template-columns: 1fr 1fr; }
+.chart-row.c3 { grid-template-columns: 2fr 1fr; }
+.chart-row.c1 { grid-template-columns: 1fr; }
+.chart-card {
+  background: var(--surface); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 16px; transition: box-shadow 0.2s;
+}
+.chart-card:hover { box-shadow: var(--shadow); }
+.cc-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
+.cc-title { font-size: 13px; font-weight: 600; color: var(--text); }
+.cc-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
+.cc-badge { background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; white-space: nowrap; }
+canvas { width: 100% !important; }
+.chart-loading { display: flex; align-items: center; justify-content: center; height: 200px; color: var(--text-muted); font-size: 13px; flex-direction: column; gap: 10px; }
+.spinner { width: 24px; height: 24px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }
+
+/* ── ORG UNIT ACCORDION ── */
+.ou-tree { display: grid; gap: 8px; margin-top: 8px; }
+.ou-level {
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  background: rgba(16, 22, 33, 0.55);
+  overflow: hidden;
+}
+.ou-level summary {
+  list-style: none;
+  cursor: pointer;
+  padding: 10px 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+.ou-level summary::-webkit-details-marker { display: none; }
+.ou-level summary::after {
+  content: '▾';
+  color: var(--text-muted);
+  font-size: 11px;
+  transition: transform 0.2s ease;
+}
+.ou-level[open] summary::after { transform: rotate(180deg); }
+.ou-level.is-active summary {
+  background: rgba(17, 141, 255, 0.12);
+  color: #dfe8ff;
+}
+.ou-level-body {
+  padding: 10px 12px 12px;
+  border-top: 1px solid rgba(42, 51, 71, 0.8);
+}
+.ou-level-meta {
+  font-size: 10px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+.ou-unit-list {
+  display: grid;
+  gap: 6px;
+  max-height: 220px;
+  overflow: auto;
+}
+.ou-unit-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px 8px;
+  border-radius: 8px;
+  background: rgba(24, 31, 45, 0.75);
+  color: var(--text-muted);
+  font-size: 12px;
+}
+.ou-unit-item input { accent-color: var(--accent); }
+.ou-unit-item.is-selected {
+  background: rgba(17, 141, 255, 0.14);
+  color: #e8eefc;
+  border: 1px solid rgba(17, 141, 255, 0.3);
+}
+.ou-unit-empty {
+  font-size: 12px;
+  color: var(--text-muted);
+  padding: 8px 0;
+}
+.filter-hidden {
+  display: none !important;
+}
+
+/* ── EXPLORER CHART ── */
+.explorer-card {
+  background: var(--surface); border: 1px solid rgba(17,141,255,0.3);
+  border-radius: var(--radius); padding: 16px;
+  box-shadow: 0 0 0 1px rgba(17,141,255,0.08);
+}
+.explorer-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
+.explorer-title { font-size: 14px; font-weight: 700; color: var(--text); }
+.explorer-badge { background: rgba(17,141,255,0.15); border: 1px solid rgba(17,141,255,0.3); color: var(--accent); padding: 3px 10px; border-radius: 10px; font-size: 10px; font-weight: 700; }
+.explorer-hint { font-size: 11px; color: var(--text-muted); }
+.explorer-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 12px; min-height: 28px; }
+.chip {
+  background: rgba(17,141,255,0.15); border: 1px solid rgba(17,141,255,0.25);
+  color: var(--accent); padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 500;
+  display: flex; align-items: center; gap: 5px;
+}
+.chip-remove { cursor: pointer; opacity: 0.7; font-size: 13px; line-height: 1; }
+.chip-remove:hover { opacity: 1; color: var(--red); }
+.chip-empty { font-size: 12px; color: var(--text-muted); font-style: italic; }
+
+/* ── OFFLINE BANNER ── */
+.offline-notice {
+  background: rgba(230,83,79,0.1); border: 1px solid rgba(230,83,79,0.3);
+  border-radius: var(--radius); padding: 14px 18px; text-align: center;
+  display: none;
+}
+.offline-notice.show { display: block; }
+.offline-notice h3 { color: var(--accent4); font-size: 14px; margin-bottom: 6px; }
+.offline-notice p { color: var(--text-muted); font-size: 12px; line-height: 1.6; }
+
+/* ── SCROLLBAR ── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+@media (max-width: 1100px) {
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .chart-row.c2 { grid-template-columns: 1fr; }
+  .chart-row.c3 { grid-template-columns: 1fr; }
+}
+@media (max-width: 700px) {
+  :root { --sidebar-w: 240px; }
+  .kpi-grid { grid-template-columns: 1fr 1fr; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-left">
+    <div class="logo">NM</div>
+    <div>
+      <div class="header-title">Nigeria Malaria Indicators Dashboard</div>
+      <div class="header-sub">National Malaria Elimination Programme (NMEP) · DHIS2 Live Data</div>
+    </div>
+  </div>
+  <div class="header-center">
+    <div class="brand-strip">
+      <img class="brand-logo" src="/static/dhis2-logo.svg" alt="DHIS2 logo">
+      <span class="brand-plus">+</span>
+      <span class="brand-path-wrap">
+        <img class="brand-logo brand-path" src="/static/path-logo.png" alt="PATH logo">
+      </span>
+    </div>
+  </div>
+  <div class="header-right">
+    <span class="status-dot loading" id="statusDot"></span>
+    <span class="status-label" id="statusLabel">Connecting…</span>
+    <button class="btn-refresh" onclick="refreshAll()">↺ Refresh</button>
+    <span class="last-sync" id="lastSync"></span>
+  </div>
+</header>
+
+<div class="body-wrap">
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+
+  <!-- ORG UNIT -->
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Organisation Unit</div>
+    <div class="filter-label">Select Level</div>
+    <select class="filter-select" id="ouLevel" onchange="handleLevelSelection(this.value)"></select>
+    <div class="filter-label">Group</div>
+    <select class="filter-select" id="ouGroup" onchange="loadOrgUnits()">
+      <option value="">All Groups</option>
+    </select>
+    <div class="filter-label">Levels and Units</div>
+    <div class="ou-tree" id="ouLevelTree">
+      <div class="ou-unit-empty">Loading organization unit levels…</div>
+    </div>
+    <select class="filter-select filter-multiselect filter-hidden" id="ouSelect" multiple onchange="refreshAll()"></select>
+    <div class="filter-hint" id="ouHint">No unit selected means all organization units at the chosen level.</div>
+  </div>
+
+  <!-- TIME PERIOD -->
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Time Period</div>
+    <div class="filter-label">Years</div>
+    <select class="filter-select filter-multiselect" id="yearSelect" multiple onchange="refreshAll()"></select>
+    <div class="filter-label">Months</div>
+    <select class="filter-select filter-multiselect" id="monthSelect" multiple onchange="refreshAll()"></select>
+    <div class="filter-hint" id="periodHint">Hold Ctrl or Cmd to select multiple months or years.</div>
+  </div>
+
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Chart Axis</div>
+    <div class="filter-label">X-Axis Mode</div>
+    <select class="filter-select" id="xAxisMode" onchange="refreshAll()">
+      <option value="auto">Auto</option>
+      <option value="org">Organization Units</option>
+      <option value="period">Time Periods</option>
+    </select>
+    <div class="filter-hint">Choose whether charts compare organization units or selected time periods on the x-axis.</div>
+  </div>
+
+  <!-- INDICATOR EXPLORER -->
+  <div class="sidebar-section">
+    <div class="sidebar-section-title">Indicator Explorer</div>
+    <div class="filter-label">Search indicators</div>
+    <input class="indicator-search" type="text" placeholder="Search…" id="indicatorSearch" oninput="filterIndicators()">
+    <div class="filter-label">Select to plot on explorer chart</div>
+    <div class="indicator-list-wrap" id="indicatorList">
+      <div style="padding:20px;text-align:center;color:var(--text-muted);font-size:12px;">Loading indicators…</div>
+    </div>
+    <div class="selected-count" id="selectedCount">0 indicators selected</div>
+    <button class="btn-apply" onclick="applyExplorer()">Plot Selected →</button>
+    <button class="btn-clear-sel" onclick="clearSelection()">Clear Selection</button>
+  </div>
+
+  <div class="sidebar-footer">
+    All Rights Reserved. Copyright <span id="copyrightYear">2026</span> MACEPA Nigeria | Dev. with <i class="love-icon">♥</i> by IO3 Nigeria Team
+  </div>
+
+</aside>
+
+<!-- MAIN CONTENT -->
+<main class="main" id="mainContent">
+
+  <!-- OFFLINE NOTICE -->
+  <div class="offline-notice" id="offlineNotice">
+    <h3>⚠ DHIS2 Sync Unavailable</h3>
+    <p>The DHIS2 Nigeria server is currently offline or unreachable.<br>
+       This dashboard now uses live DHIS2 data only.<br>
+       Click <b>Refresh</b> in the header to retry the connection.</p>
+  </div>
+
+  <!-- BANNER -->
+  <div class="banner">
+    <div class="banner-icon">🦟</div>
+    <div>
+      <div class="banner-title">DHIS2 Nigeria Malaria Indicator Dashboard</div>
+      <div class="banner-sub">All indicators sourced live from DHIS2 National Instance · Use sidebar filters to drill down</div>
+      <div class="banner-tags">
+        <span class="tag g">Prevention</span>
+        <span class="tag">Diagnosis</span>
+        <span class="tag o">Treatment</span>
+        <span class="tag r">Impact</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- PREVENTION KPIs -->
+  <div class="section-header">
+    <span class="section-label">Prevention</span>
+    <span class="section-badge sb-prevention">Malaria Prevention & ANC</span>
+    <div class="section-line"></div>
+  </div>
+  <div class="kpi-grid" id="kpiPrevention"></div>
+
+  <div class="chart-row c2">
+    <div class="chart-card">
+      <div class="cc-header">
+        <div><div class="cc-title">LLIN Distribution Matrix</div><div class="cc-sub">Children under 5 and pregnant women who received LLIN</div></div>
+        <span class="cc-badge" id="itnBadge">LIVE</span>
+      </div>
+      <div id="itnChartWrap"><div class="chart-loading"><div class="spinner"></div>Loading…</div></div>
+      <canvas id="itnChart" style="display:none;max-height:250px;"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="cc-header">
+        <div><div class="cc-title">LLIN Coverage Indicators</div><div class="cc-sub">Under-5 LLIN coverage and antenatal first-visit LLIN coverage</div></div>
+        <span class="cc-badge">LLIN %</span>
+      </div>
+      <div id="llinCoverageChartWrap"><div class="chart-loading"><div class="spinner"></div>Loading…</div></div>
+      <canvas id="llinCoverageChart" style="display:none;max-height:250px;"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-row c2">
+    <div class="chart-card">
+      <div class="cc-header">
+        <div><div class="cc-title">ANC Malaria IPT Coverage</div><div class="cc-sub">All antenatal care clients receiving malaria IPT</div></div>
+        <span class="cc-badge">ANC IPT</span>
+      </div>
+      <div id="ancIptChartWrap"><div class="chart-loading"><div class="spinner"></div>Loading…</div></div>
+      <canvas id="ancIptChart" style="display:none;max-height:250px;"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="cc-header">
+        <div><div class="cc-title">Institutional IPTp Coverage</div><div class="cc-sub">IPTp1, IPTp2, IPTp3 and IPTp≥4 institutional coverage</div></div>
+        <span class="cc-badge">IPTp Cov</span>
+      </div>
+      <div id="iptpCoverageChartWrap"><div class="chart-loading"><div class="spinner"></div>Loading…</div></div>
+      <canvas id="iptpCoverageChart" style="display:none;max-height:250px;"></canvas>
+    </div>
+  </div>
+
+  <!-- DIAGNOSIS KPIs -->
+  <div class="section-header">
+    <span class="section-label">Diagnosis</span>
+    <span class="section-badge sb-diagnosis">Malaria Testing & Positivity</span>
+    <div class="section-line"></div>
+  </div>
+  <div class="kpi-grid" id="kpiDiagnosis"></div>
+
+  <div class="chart-row c2">
+    <div class="chart-card">
+      <div class="cc-header">
+        <div><div class="cc-title">% Confirmed Malaria (RDT or Microscopy)</div><div class="cc-sub">Share of malaria cases confirmed by RDT or microscopy</div></div>
+        <span class="cc-badge">DX 1</span>
+      </div>
+      <div id="confirmedMalariaChartWrap"><div class="chart-loading"><div class="spinner"></div>Loading…</div></div>
+      <canvas id="confirmedMalariaChart" style="display:none;max-height:260px;"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="cc-header">
+        <div><div class="cc-title">% Confirmed uncomplicated Malaria</div><div class="cc-sub">Share of uncomplicated malaria cases confirmed</div></div>
+        <span class="cc-badge">DX 2</span>
+      </div>
+      <div id="confirmedUncompChartWrap"><div class="chart-loading"><div class="spinner"></div>Loading…</div></div>
+      <canvas id="confirmedUncompChart" style="display:none;max-height:260px;"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-row c2">
+    <div class="chart-card">
+      <div class="cc-header">
+        <div><div class="cc-title">% of Fever cases Tested with Microscopy</div><div class="cc-sub">Microscopy testing coverage among fever cases</div></div>
+        <span class="cc-badge">DX 3</span>
+      </div>
+      <div id="microTestChartWrap"><div class="chart-loading"><div class="spinner"></div>Loading…</div></div>
+      <canvas id="microTestChart" style="display:none;max-height:260px;"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="cc-header">
+        <div><div class="cc-title">% of Fever cases Tested with RDT</div><div class="cc-sub">RDT testing coverage among fever cases</div></div>
+        <span class="cc-badge">DX 4</span>
+      </div>
+      <div id="rdtTestChartWrap"><div class="chart-loading"><div class="spinner"></div>Loading…</div></div>
+      <canvas id="rdtTestChart" style="display:none;max-height:260px;"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-row c2">
+    <div class="chart-card">
+      <div class="cc-header">
+        <div><div class="cc-title">% of suspected malaria receiving parasitological test</div><div class="cc-sub">Parasitological testing coverage among suspected malaria cases</div></div>
+        <span class="cc-badge">DX 5</span>
+      </div>
+      <div id="parasitologicalTestChartWrap"><div class="chart-loading"><div class="spinner"></div>Loading…</div></div>
+      <canvas id="parasitologicalTestChart" style="display:none;max-height:260px;"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="cc-header">
+        <div><div class="cc-title">Fever Testing Rate</div><div class="cc-sub">Overall fever testing rate for malaria diagnosis</div></div>
+        <span class="cc-badge">DX 6</span>
+      </div>
+      <div id="feverTestingRateChartWrap"><div class="chart-loading"><div class="spinner"></div>Loading…</div></div>
+      <canvas id="feverTestingRateChart" style="display:none;max-height:260px;"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-row c2">
+    <div class="chart-card">
+      <div class="cc-header">
+        <div><div class="cc-title">% of Fever cases tested positive with Microscopy</div><div class="cc-sub">Microscopy positivity among tested fever cases</div></div>
+        <span class="cc-badge">DX 7</span>
+      </div>
+      <div id="microPositiveChartWrap"><div class="chart-loading"><div class="spinner"></div>Loading…</div></div>
+      <canvas id="microPositiveChart" style="display:none;max-height:260px;"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="cc-header">
+        <div><div class="cc-title">% of Fever cases tested positive with RDT</div><div class="cc-sub">RDT positivity among tested fever cases</div></div>
+        <span class="cc-badge">DX 8</span>
+      </div>
+      <div id="rdtPositiveChartWrap"><div class="chart-loading"><div class="spinner"></div>Loading…</div></div>
+      <canvas id="rdtPositiveChart" style="display:none;max-height:260px;"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-row c2">
+    <div class="chart-card">
+      <div class="cc-header">
+        <div><div class="cc-title">% of Malaria cases clinically diagnosed</div><div class="cc-sub">Clinical diagnosis share among malaria cases</div></div>
+        <span class="cc-badge">DX 9</span>
+      </div>
+      <div id="clinicalMixChartWrap"><div class="chart-loading"><div class="spinner"></div>Loading…</div></div>
+      <canvas id="clinicalMixChart" style="display:none;max-height:260px;"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="cc-header">
+        <div><div class="cc-title">Test Positivity Rate (TPR) Microscopy</div><div class="cc-sub">Microscopy-based malaria test positivity rate</div></div>
+        <span class="cc-badge">DX 10</span>
+      </div>
+      <div id="microTprChartWrap"><div class="chart-loading"><div class="spinner"></div>Loading…</div></div>
+      <canvas id="microTprChart" style="display:none;max-height:260px;"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-row c1">
+    <div class="chart-card">
+      <div class="cc-header">
+        <div><div class="cc-title">Test Positivity Rate (TPR) RDT</div><div class="cc-sub">RDT-based malaria test positivity rate</div></div>
+        <span class="cc-badge">DX 11</span>
+      </div>
+      <div id="rdtTprChartWrap"><div class="chart-loading"><div class="spinner"></div>Loading…</div></div>
+      <canvas id="rdtTprChart" style="display:none;max-height:260px;"></canvas>
+    </div>
+  </div>
+
+  <!-- TREATMENT KPIs -->
+  <div class="section-header">
+    <span class="section-label">Treatment</span>
+    <span class="section-badge sb-treatment">Malaria Case Management</span>
+    <div class="section-line"></div>
+  </div>
+  <div class="kpi-grid" id="kpiTreatment"></div>
+
+  <div class="chart-row c2">
+    <div class="chart-card">
+      <div class="cc-header">
+        <div><div class="cc-title">Treatment Outcome Percentages</div><div class="cc-sub">Percent of confirmed uncomplicated malaria treated by ACT or other antimalarials</div></div>
+        <span class="cc-badge">ACT</span>
+      </div>
+      <div id="actChartWrap"><div class="chart-loading"><div class="spinner"></div>Loading…</div></div>
+      <canvas id="actChart" style="display:none;max-height:250px;"></canvas>
+    </div>
+    <div class="chart-card">
+      <div class="cc-header">
+        <div><div class="cc-title">Treatment Volume Mix</div><div class="cc-sub">Clinical ACT, confirmed ACT, and other antimalarial treatment counts</div></div>
+        <span class="cc-badge">TX Mix</span>
+      </div>
+      <div id="severeChartWrap"><div class="chart-loading"><div class="spinner"></div>Loading…</div></div>
+      <canvas id="severeChart" style="display:none;max-height:250px;"></canvas>
+    </div>
+  </div>
+
+  <!-- IMPACT KPIs -->
+  <div class="section-header">
+    <span class="section-label">Impact</span>
+    <span class="section-badge sb-impact">Malaria Burden & Outcomes</span>
+    <div class="section-line"></div>
+  </div>
+  <div class="kpi-grid" id="kpiImpact"></div>
+
+  <div class="chart-row c1">
+    <div class="chart-card">
+      <div class="cc-header">
+        <div><div class="cc-title">Under-5 Malaria Death Attribution</div><div class="cc-sub">Percent of under-5 deaths attributable to malaria</div></div>
+        <span class="cc-badge">BURDEN</span>
+      </div>
+      <div id="burdenChartWrap"><div class="chart-loading"><div class="spinner"></div>Loading…</div></div>
+      <canvas id="burdenChart" style="display:none;max-height:250px;"></canvas>
+    </div>
+  </div>
+
+  <!-- EXPLORER CHART -->
+  <div class="section-header">
+    <span class="section-label">Indicator Explorer</span>
+    <div class="section-line"></div>
+  </div>
+  <div class="explorer-card">
+    <div class="explorer-header">
+      <div class="explorer-title">Custom Indicator Plot</div>
+      <span class="explorer-badge">INTERACTIVE</span>
+      <span class="explorer-hint">Select indicators from the sidebar to visualise them here</span>
+    </div>
+    <div class="explorer-chips" id="explorerChips">
+      <span class="chip-empty">No indicators selected — use the sidebar to add indicators to this chart</span>
+    </div>
+    <div id="explorerChartWrap"><div class="chart-loading" style="height:160px;">Select indicators from the sidebar →</div></div>
+    <canvas id="explorerChart" style="display:none;max-height:320px;"></canvas>
+  </div>
+
+</main>
+</div>
+
+<script>
+Chart.register(ChartDataLabels);
+
+const API = '';  // Flask backend on same origin
+const CHART_COLORS = ['#118DFF','#12B0A0','#E8A838','#E6534F','#8764B8','#60BFB6','#F9A42A','#FF6B81','#34D399','#A78BFA'];
+
+const charts = {};
+let dashboardConfig = null;
+let allIndicators = [];   // flat list of all indicators for explorer
+let selectedIndicators = []; // selected for explorer
+let orgUnits = [];
+let orgUnitLevels = [];
+let orgUnitsByLevel = {};
+let selectedOrgUnitsByLevel = {};
+let periodConfig = null;
+let orgUnitGroupSets = [];
+const FEDERAL_ORG_UNIT = { id: 's5DPBsdoE8b', name: 'Federal Government', level: 1, parent: null, path: '/s5DPBsdoE8b' };
+
+// ── Helpers ─────────────────────────────────────────────────────────────────
+
+function fmt(n) {
+  if (n == null || isNaN(n)) return '—';
+  if (n >= 1e6) return (n/1e6).toFixed(1) + 'M';
+  if (n >= 1e3) return (n/1e3).toFixed(1) + 'K';
+  return Math.round(n).toLocaleString();
+}
+
+function setStatus(state, text) {
+  const dot = document.getElementById('statusDot');
+  const lbl = document.getElementById('statusLabel');
+  dot.className = 'status-dot ' + state;
+  lbl.textContent = text;
+}
+
+function getOU() {
+  const level = document.getElementById('ouLevel').value || '1';
+  const selected = getSelectedValues('ouSelect');
+  const group = document.getElementById('ouGroup')?.value;
+  if (selected.length) return selected.join(';');
+  if ((group || hasAncestorSelectionsForLevel(level)) && orgUnits.length) return orgUnits.map(unit => unit.id).join(';');
+  return `LEVEL-${level}`;
+}
+
+function getOUDisplayLabel() {
+  const selectedOptions = Array.from(document.getElementById('ouSelect').selectedOptions);
+  const levelSelect = document.getElementById('ouLevel');
+  const activeLevel = orgUnitLevels.find(level => String(level.level) === String(levelSelect?.value || '1'));
+  const levelText = activeLevel?.name || levelSelect?.selectedOptions?.[0]?.textContent || `Level ${levelSelect?.value || '1'}`;
+  const groupLabel = document.getElementById('ouGroup')?.selectedOptions?.[0]?.textContent;
+  if (!selectedOptions.length) {
+    return groupLabel && document.getElementById('ouGroup')?.value
+      ? `${levelText.toUpperCase()} · ${groupLabel.toUpperCase()}`
+      : `ALL ${levelText.toUpperCase()}`;
+  }
+  if (selectedOptions.length === 1) {
+    return `${levelText.toUpperCase()} · ${selectedOptions[0].textContent.toUpperCase()}`;
+  }
+  return groupLabel && document.getElementById('ouGroup')?.value
+    ? `${levelText.toUpperCase()} · ${selectedOptions.length} ${groupLabel.toUpperCase()} UNITS`
+    : `${levelText.toUpperCase()} · ${selectedOptions.length} UNITS SELECTED`;
+}
+
+function normalizeOrgUnitLabel(name) {
+  if (!name) return '';
+  const compact = String(name).trim();
+  if (compact.toLowerCase() === 'ng federal government') return 'Federal Government';
+  return compact.replace(/^ng\s+/i, '');
+}
+
+function setActiveOrgLevel(level) {
+  document.getElementById('ouLevel').value = String(level);
+  document.querySelectorAll('.ou-level').forEach(section => {
+    const isActive = section.dataset.level === String(level);
+    section.classList.toggle('is-active', isActive);
+    if (isActive) section.open = true;
+  });
+  syncHiddenOrgSelection();
+}
+
+async function handleLevelSelection(level) {
+  setActiveOrgLevel(level);
+  if (!orgUnitsByLevel[String(level)]?.length) {
+    await loadOrgUnitsForLevel(level);
+    syncHiddenOrgSelection();
+  }
+  await refreshAll();
+}
+
+function renderOrgUnitLevels() {
+  const tree = document.getElementById('ouLevelTree');
+  if (!orgUnitLevels.length) {
+    tree.innerHTML = '<div class="ou-unit-empty">No organization unit levels available.</div>';
+    return;
+  }
+
+  const activeLevel = document.getElementById('ouLevel').value || String(orgUnitLevels[0].level);
+  tree.innerHTML = orgUnitLevels.map(level => `
+    <details class="ou-level ${String(level.level) === String(activeLevel) ? 'is-active' : ''}" data-level="${level.level}" ${Number(level.level) === 1 ? 'open' : ''}>
+      <summary>${level.name} <span>Level ${level.level}</span></summary>
+      <div class="ou-level-body">
+        <div class="ou-level-meta">Select units for ${level.name}</div>
+        <div class="ou-unit-list" id="ouUnits-${level.level}">
+          <div class="ou-unit-empty">Loading ${level.name.toLowerCase()} units…</div>
+        </div>
+      </div>
+    </details>
+  `).join('');
+
+  tree.querySelectorAll('.ou-level').forEach(section => {
+    section.addEventListener('toggle', async () => {
+      if (!section.open) return;
+      const level = section.dataset.level;
+      setActiveOrgLevel(level);
+      await loadOrgUnitsForHierarchy();
+    });
+  });
+}
+
+function renderOrgUnitsList(level, units, selectedIds) {
+  const container = document.getElementById(`ouUnits-${level}`);
+  if (!container) return;
+  if (!units.length) {
+    container.innerHTML = '<div class="ou-unit-empty">No units available for this level.</div>';
+    return;
+  }
+
+  container.innerHTML = units.map(unit => `
+    <label class="ou-unit-item ${selectedIds.has(unit.id) ? 'is-selected' : ''}">
+      <input type="checkbox" value="${unit.id}" ${selectedIds.has(unit.id) ? 'checked' : ''}>
+      <span>${normalizeOrgUnitLabel(unit.name)}</span>
+    </label>
+  `).join('');
+
+  container.querySelectorAll('input[type="checkbox"]').forEach(input => {
+    input.addEventListener('change', () => {
+      const selectedSet = new Set(selectedOrgUnitsByLevel[level] || []);
+      if (input.checked) selectedSet.add(input.value);
+      else selectedSet.delete(input.value);
+      selectedOrgUnitsByLevel[level] = Array.from(selectedSet);
+      input.closest('.ou-unit-item')?.classList.toggle('is-selected', input.checked);
+      loadOrgUnitsForHierarchy(level).then(() => refreshAll());
+    });
+  });
+}
+
+function getNearestParentSelections(level) {
+  for (let current = Number(level) - 1; current >= 1; current -= 1) {
+    const selected = selectedOrgUnitsByLevel[String(current)] || [];
+    if (selected.length) return { level: String(current), ids: selected };
+  }
+  return null;
+}
+
+function hasAncestorSelectionsForLevel(level) {
+  return Boolean(getNearestParentSelections(level)?.ids?.length);
+}
+
+function syncHiddenOrgSelection() {
+  const level = String(document.getElementById('ouLevel').value || '1');
+  const hiddenSelect = document.getElementById('ouSelect');
+  const units = orgUnitsByLevel[level] || [];
+  const selectedIds = new Set(selectedOrgUnitsByLevel[level] || []);
+  hiddenSelect.innerHTML = '';
+  units.forEach(unit => {
+    const opt = document.createElement('option');
+    opt.value = unit.id;
+    opt.textContent = normalizeOrgUnitLabel(unit.name);
+    opt.selected = selectedIds.has(unit.id);
+    hiddenSelect.appendChild(opt);
+  });
+  orgUnits = units;
+}
+
+async function loadOrgUnitsForLevel(level) {
+  const group = document.getElementById('ouGroup').value;
+  const selectedIds = new Set(selectedOrgUnitsByLevel[String(level)] || []);
+  const query = new URLSearchParams({ level: String(level) });
+  const parentScope = getNearestParentSelections(level);
+  if (parentScope?.ids?.length) {
+    query.set('parents', parentScope.ids.join(','));
+    query.set('descendants', 'true');
+  }
+  if (group && String(level) === '5') {
+    query.set('group', group);
+  }
+
+  const response = await apiFetch(`/api/meta/org-units?${query.toString()}`);
+  let units = response.items || [];
+  if (String(level) === '1' && !units.find(unit => unit.id === FEDERAL_ORG_UNIT.id)) {
+    units = [FEDERAL_ORG_UNIT, ...units];
+  }
+  orgUnitsByLevel[String(level)] = units;
+  selectedOrgUnitsByLevel[String(level)] = (selectedOrgUnitsByLevel[String(level)] || []).filter(id => units.some(unit => unit.id === id));
+  renderOrgUnitsList(String(level), units, new Set(selectedOrgUnitsByLevel[String(level)] || []));
+}
+
+async function loadOrgUnitsForHierarchy(changedLevel=null) {
+  const levels = orgUnitLevels.map(item => Number(item.level)).sort((a, b) => a - b);
+  const startLevel = changedLevel ? Number(changedLevel) + 1 : null;
+  if (startLevel) {
+    levels.filter(level => level >= startLevel).forEach(level => {
+      selectedOrgUnitsByLevel[String(level)] = [];
+      orgUnitsByLevel[String(level)] = [];
+    });
+  }
+
+  for (const level of levels) {
+    await loadOrgUnitsForLevel(level);
+  }
+
+  syncHiddenOrgSelection();
+  const activeLevel = String(document.getElementById('ouLevel').value || '1');
+  const groupLabel = document.getElementById('ouGroup').selectedOptions[0]?.textContent || 'All Groups';
+  const activeLevelName = orgUnitLevels.find(item => String(item.level) === activeLevel)?.name || `Level ${activeLevel}`;
+  const constrainedBy = getNearestParentSelections(activeLevel);
+  document.getElementById('ouHint').textContent = constrainedBy
+    ? `${activeLevelName} is currently filtered by your ${orgUnitLevels.find(item => String(item.level) === constrainedBy.level)?.name || `Level ${constrainedBy.level}`} selection${groupLabel !== 'All Groups' && activeLevel === '5' ? ` and ${groupLabel}` : ''}.`
+    : `Expand any level and select units. If no unit is selected at the active level, all visible ${activeLevelName.toLowerCase()} units are used${groupLabel !== 'All Groups' && activeLevel === '5' ? ` for ${groupLabel}` : ''}.`;
+}
+
+async function loadOrgUnits(levelOverride=null) {
+  if (levelOverride) {
+    setActiveOrgLevel(levelOverride);
+  }
+  await loadOrgUnitsForHierarchy(levelOverride);
+}
+
+function getPeriodDisplayLabel() {
+  const years = getSelectedValues('yearSelect');
+  const months = getSelectedValues('monthSelect');
+  const yearLabel = years.length ? years.join(', ') : String(periodConfig?.current_year || new Date().getFullYear());
+  if (!months.length) return yearLabel;
+
+  const monthNames = months.map(value => {
+    const option = Array.from(document.getElementById('monthSelect').options).find(opt => opt.value === value);
+    return option ? option.textContent : value;
+  });
+  return `${monthNames.join(', ')} · ${yearLabel}`;
+}
+
+function getSelectedValues(id) {
+  return Array.from(document.getElementById(id).selectedOptions).map(opt => opt.value);
+}
+
+function getSelectedPeriods() {
+  if (!periodConfig) return [String(new Date().getFullYear())];
+
+  const selectedYears = getSelectedValues('yearSelect');
+  const selectedMonths = getSelectedValues('monthSelect');
+  const years = selectedYears.length ? selectedYears.map(Number).sort((a, b) => a - b) : [periodConfig.current_year];
+
+  if (!selectedMonths.length) {
+    return years.map(String);
+  }
+
+  const months = selectedMonths.map(Number).sort((a, b) => a - b);
+  const periods = [];
+  years.forEach(year => {
+    months.forEach(month => {
+      if (year < periodConfig.start_year) return;
+      if (year === periodConfig.current_year && month > periodConfig.current_month) return;
+      periods.push(`${year}${String(month).padStart(2, '0')}`);
+    });
+  });
+
+  return periods.length ? periods : [String(periodConfig.current_year)];
+}
+
+function getPE() {
+  return getSelectedPeriods().join(';');
+}
+
+function destroyChart(id) {
+  if (charts[id]) { charts[id].destroy(); delete charts[id]; }
+}
+
+function showCanvas(id, wrapId) {
+  document.getElementById(wrapId).style.display = 'none';
+  document.getElementById(id).style.display = 'block';
+}
+
+function showLoading(wrapId, canvasId) {
+  document.getElementById(wrapId).innerHTML = '<div class="chart-loading"><div class="spinner"></div>Loading…</div>';
+  document.getElementById(wrapId).style.display = 'flex';
+  document.getElementById(canvasId).style.display = 'none';
+}
+
+function chartDefaults() {
+  return {
+    responsive: true,
+    plugins: {
+      legend: { position:'bottom', labels:{ color:'#8892a4', boxWidth:12, padding:12, font:{size:11} } },
+      datalabels: { display: false },
+      tooltip: {
+        backgroundColor:'#1e2635', borderColor:'#2a3347', borderWidth:1,
+        titleColor:'#e8eaf0', bodyColor:'#8892a4',
+        callbacks: { label: ctx => ` ${ctx.dataset.label||''}: ${fmt(ctx.parsed.y ?? ctx.parsed)}` }
+      }
+    },
+    scales: {
+      x: { grid:{ color:'rgba(42,51,71,0.4)' }, ticks:{ color:'#8892a4', font:{size:10} } },
+      y: { grid:{ color:'rgba(42,51,71,0.4)' }, ticks:{ color:'#8892a4', callback: v=>fmt(v) } }
+    }
+  };
+}
+
+function getXAxisMode() {
+  return document.getElementById('xAxisMode')?.value || 'auto';
+}
+
+function updateChartContextLabels() {
+  const orgLabel = getOUDisplayLabel();
+  const periodLabel = getPeriodDisplayLabel();
+  const xAxisMode = getXAxisMode();
+
+  document.querySelectorAll('.chart-card').forEach(card => {
+    const badge = card.querySelector('.cc-badge');
+    const subtitle = card.querySelector('.cc-sub');
+    if (badge && !badge.dataset.baseText) badge.dataset.baseText = badge.textContent.trim();
+    if (subtitle && !subtitle.dataset.baseText) subtitle.dataset.baseText = subtitle.textContent.trim();
+
+    if (badge) {
+      const parts = [badge.dataset.baseText, orgLabel];
+      badge.textContent = parts.filter(Boolean).join(' · ');
+    }
+
+    if (subtitle) {
+      const axisLabel = xAxisMode === 'org' ? `X-Axis: ${orgLabel}` : xAxisMode === 'period' ? `X-Axis: ${periodLabel}` : `Axis: Auto`;
+      const parts = [subtitle.dataset.baseText, axisLabel];
+      subtitle.textContent = parts.filter(Boolean).join(' · ');
+    }
+  });
+}
+
+// ── API fetch ────────────────────────────────────────────────────────────────
+
+async function apiFetch(path) {
+  const r = await fetch(API + path);
+  let payload = null;
+  try { payload = await r.clone().json(); } catch (e) {}
+  if (!r.ok) {
+    const detail = payload?.error ? `: ${payload.error}` : '';
+    throw new Error(`${path} -> HTTP ${r.status}${detail}`);
+  }
+  return r.json();
+}
+
+async function apiPost(path, body={}) {
+  const r = await fetch(API + path, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body),
+  });
+  let payload = null;
+  try { payload = await r.clone().json(); } catch (e) {}
+  if (!r.ok) {
+    const detail = payload?.error ? `: ${payload.error}` : '';
+    throw new Error(`${path} -> HTTP ${r.status}${detail}`);
+  }
+  return r.json();
+}
+
+// ── Status check ─────────────────────────────────────────────────────────────
+
+async function checkHealth() {
+  setStatus('loading','Connecting…');
+  try {
+    const h = await apiFetch('/api/sync/status');
+    if (h.status === 'connected' || h.status === 'degraded') {
+      const stateLabel = h.status === 'degraded' ? 'Degraded' : 'Connected';
+      setStatus(h.status === 'degraded' ? 'loading' : 'online', `${stateLabel} · DHIS2 ${h.dhis2_info?.version||''}`);
+      hideOfflineNotice();
+      const lastSuccess = h.last_success_at ? new Date(h.last_success_at).toLocaleTimeString() : new Date().toLocaleTimeString();
+      document.getElementById('lastSync').textContent = 'Synced ' + lastSuccess;
+      return true;
+    } else {
+      setStatus('offline','DHIS2 Offline');
+      showOfflineNotice(h.last_error || 'The DHIS2 Nigeria server is currently offline or unreachable.');
+      return false;
+    }
+  } catch(e) {
+    setStatus('offline','Server Unreachable');
+    showOfflineNotice(e.message || 'The backend could not reach the DHIS2 sync service.');
+    return false;
+  }
+}
+
+// ── Org units ────────────────────────────────────────────────────────────────
+
+async function loadOrgUnitLevels() {
+  const sel = document.getElementById('ouLevel');
+  sel.innerHTML = '';
+  const response = await apiFetch('/api/meta/org-unit-levels');
+  const levels = response.items || [];
+  orgUnitLevels = levels;
+  levels.forEach(level => {
+    const opt = document.createElement('option');
+    opt.value = level.level;
+    opt.textContent = `${level.name} (Level ${level.level})`;
+    sel.appendChild(opt);
+  });
+  if (levels.length) {
+    const preferred = levels.find(l => l.level === 1) || levels[0];
+    sel.value = String(preferred.level);
+  }
+  renderOrgUnitLevels();
+}
+
+async function loadOrgUnitGroups() {
+  const sel = document.getElementById('ouGroup');
+  const previous = sel.value;
+  sel.innerHTML = '<option value="">All Groups</option>';
+  const response = await apiFetch('/api/meta/org-unit-groups');
+  orgUnitGroupSets = response.items || [];
+
+  orgUnitGroupSets.forEach(groupSet => {
+    const optgroup = document.createElement('optgroup');
+    optgroup.label = groupSet.name;
+    (groupSet.groups || []).forEach(group => {
+      const opt = document.createElement('option');
+      opt.value = group.id;
+      opt.textContent = group.name;
+      if (previous === group.id) opt.selected = true;
+      optgroup.appendChild(opt);
+    });
+    sel.appendChild(optgroup);
+  });
+}
+
+async function loadPeriods() {
+  const yearSel = document.getElementById('yearSelect');
+  const monthSel = document.getElementById('monthSelect');
+  yearSel.innerHTML = '';
+  monthSel.innerHTML = '';
+
+  periodConfig = await apiFetch('/api/meta/periods');
+
+  (periodConfig.years || []).forEach(period => {
+    const opt = document.createElement('option');
+    opt.value = period.id;
+    opt.textContent = period.name;
+    yearSel.appendChild(opt);
+  });
+
+  (periodConfig.months || []).forEach(period => {
+    const opt = document.createElement('option');
+    opt.value = period.id;
+    opt.textContent = period.name;
+    if (period.month > periodConfig.current_month) {
+      opt.disabled = true;
+    }
+    monthSel.appendChild(opt);
+  });
+
+  const currentYearOption = Array.from(yearSel.options).find(opt => Number(opt.value) === periodConfig.current_year);
+  const currentMonthOption = Array.from(monthSel.options).find(opt => Number(opt.value) === periodConfig.current_month);
+  if (currentYearOption) currentYearOption.selected = true;
+  if (currentMonthOption) currentMonthOption.selected = true;
+
+  document.getElementById('periodHint').textContent = `Years 2018-${periodConfig.current_year} confirmed from DHIS2. Current server period: ${periodConfig.server_date}.`;
+}
+
+// ── Dashboard config & indicators ────────────────────────────────────────────
+
+async function loadDashboardConfig() {
+  const response = await apiFetch('/api/meta/dashboard-config');
+  dashboardConfig = response.groups || {};
+  allIndicators = response.items || [];
+
+  if (!allIndicators.length) {
+    Object.entries(dashboardConfig).forEach(([cat, items]) => {
+      items.forEach(ind => allIndicators.push({ ...ind, category: cat }));
+    });
+  }
+
+  renderIndicatorList(allIndicators);
+}
+
+function uniqueDx(items) {
+  return [...new Set(items.map(i => i.dx || i.id).filter(Boolean))];
+}
+
+function uniqueItemsByDx(items) {
+  const seen = new Set();
+  return items.filter(item => {
+    const dx = item.dx || item.id;
+    if (!dx || seen.has(dx)) return false;
+    seen.add(dx);
+    return true;
+  });
+}
+
+function renderIndicatorList(items) {
+  const cats = { prevention:[], diagnosis:[], treatment:[], impact:[] };
+  items.forEach(i => { if (cats[i.category]) cats[i.category].push(i); });
+
+  const catLabels = {
+    prevention:'Prevention & ANC',
+    diagnosis:'Diagnosis & Case Detection',
+    treatment:'Treatment & Case Management',
+    impact:'Attendance, Admissions & Outcomes'
+  };
+  const catColors = { prevention:'var(--accent2)', diagnosis:'var(--accent)', treatment:'var(--accent3)', impact:'var(--accent4)' };
+
+  let html = '';
+  Object.entries(cats).forEach(([cat, inds]) => {
+    if (!inds.length) return;
+    const color = catColors[cat];
+    html += `<div class="indicator-group-header" onclick="toggleGroup('${cat}')" style="border-left:3px solid ${color}">
+      <span>${catLabels[cat]} (${inds.length})</span>
+      <span class="group-arrow" id="arrow-${cat}">›</span>
+    </div>
+    <div class="indicator-group-items" id="group-${cat}">`;
+    inds.forEach(ind => {
+      const sel = selectedIndicators.find(s=>s.id===ind.id);
+      html += `<div class="indicator-item ${sel?'selected':''}" id="item-${ind.id}" onclick="toggleIndicator('${ind.id}')">
+        <div class="cb"><span class="cb-check">✓</span></div>
+        <span>${ind.short || ind.name}</span>
+      </div>`;
+    });
+    html += '</div>';
+  });
+  document.getElementById('indicatorList').innerHTML = html || '<div style="padding:12px;color:var(--text-muted);font-size:12px">No indicators found</div>';
+  updateSelectedCount();
+}
+
+function toggleGroup(cat) {
+  const el = document.getElementById('group-' + cat);
+  const arrow = document.getElementById('arrow-' + cat);
+  el.classList.toggle('open');
+  arrow.classList.toggle('open');
+}
+
+function toggleIndicator(id) {
+  const ind = allIndicators.find(i => i.id === id);
+  if (!ind) return;
+  const idx = selectedIndicators.findIndex(s => s.id === id);
+  if (idx >= 0) {
+    selectedIndicators.splice(idx, 1);
+    document.getElementById('item-' + id)?.classList.remove('selected');
+  } else {
+    const sharedDxIdx = selectedIndicators.findIndex(s => (s.dx || s.id) === (ind.dx || ind.id));
+    if (sharedDxIdx >= 0) {
+      const replaced = selectedIndicators[sharedDxIdx];
+      selectedIndicators.splice(sharedDxIdx, 1, ind);
+      document.getElementById('item-' + replaced.id)?.classList.remove('selected');
+    } else {
+      selectedIndicators.push(ind);
+    }
+    document.getElementById('item-' + id)?.classList.add('selected');
+  }
+  updateSelectedCount();
+}
+
+function updateSelectedCount() {
+  const n = selectedIndicators.length;
+  document.getElementById('selectedCount').textContent = n + ' indicator' + (n!==1?'s':'') + ' selected';
+}
+
+function showOfflineNotice(message='The DHIS2 Nigeria server is currently offline or unreachable.') {
+  const notice = document.getElementById('offlineNotice');
+  notice.classList.add('show');
+  notice.querySelector('p').innerHTML = `${message}<br>This dashboard uses live DHIS2 data only.<br>Click <b>Refresh</b> in the header to retry the connection.`;
+}
+
+function hideOfflineNotice() {
+  document.getElementById('offlineNotice').classList.remove('show');
+}
+
+function renderUnavailableKPIs(containerId, labels, reason='Awaiting DHIS2 sync') {
+  document.getElementById(containerId).innerHTML = labels.map((label, i) =>
+    `<div class="kpi-card kpi-c${(i%4)+1}">
+      <div class="kpi-label">${label}</div>
+      <div class="kpi-value">—</div>
+      <div class="kpi-sub">${reason}</div>
+    </div>`
+  ).join('');
+}
+
+function setChartMessage(wrapId, canvasId, message) {
+  destroyChart(canvasId);
+  const wrap = document.getElementById(wrapId);
+  wrap.innerHTML = `<div class="chart-loading">${message}</div>`;
+  wrap.style.display = 'flex';
+  document.getElementById(canvasId).style.display = 'none';
+}
+
+function renderUnavailableState(reason='Awaiting DHIS2 sync') {
+  hideOfflineNotice();
+  renderUnavailableKPIs('kpiPrevention', ['LLIN given - Total','IPT1p','IPT2p','IPT3p'], reason);
+  renderUnavailableKPIs('kpiDiagnosis', ['Persons fever tested by RDT <5yrs','Positive by RDT <5yrs','% Confirmed Malaria (RDT or Microscopy)','Fever Testing Rate'], reason);
+  renderUnavailableKPIs('kpiTreatment', ['ACT Given - Total','Confirmed Uncomplicated treated with ACT <5yrs','Persons with Severe Malaria treated with Artesunate injection','Persons with Severe Malaria treated with other pre referral treatment'], reason);
+  renderUnavailableKPIs('kpiImpact', ['Malaria confirmed pregnant women','Pregnant women clinical malaria','Confirmed uncomplicated Malaria <5yrs','% Confirmed uncomplicated Malaria'], reason);
+
+  setChartMessage('itnChartWrap', 'itnChart', reason);
+  setChartMessage('llinCoverageChartWrap', 'llinCoverageChart', reason);
+  setChartMessage('ancIptChartWrap', 'ancIptChart', reason);
+  setChartMessage('iptpCoverageChartWrap', 'iptpCoverageChart', reason);
+  setChartMessage('confirmedMalariaChartWrap', 'confirmedMalariaChart', reason);
+  setChartMessage('confirmedUncompChartWrap', 'confirmedUncompChart', reason);
+  setChartMessage('microTestChartWrap', 'microTestChart', reason);
+  setChartMessage('rdtTestChartWrap', 'rdtTestChart', reason);
+  setChartMessage('parasitologicalTestChartWrap', 'parasitologicalTestChart', reason);
+  setChartMessage('feverTestingRateChartWrap', 'feverTestingRateChart', reason);
+  setChartMessage('microPositiveChartWrap', 'microPositiveChart', reason);
+  setChartMessage('rdtPositiveChartWrap', 'rdtPositiveChart', reason);
+  setChartMessage('clinicalMixChartWrap', 'clinicalMixChart', reason);
+  setChartMessage('microTprChartWrap', 'microTprChart', reason);
+  setChartMessage('rdtTprChartWrap', 'rdtTprChart', reason);
+  setChartMessage('actChartWrap', 'actChart', reason);
+  setChartMessage('severeChartWrap', 'severeChart', reason);
+  setChartMessage('burdenChartWrap', 'burdenChart', reason);
+  setChartMessage('explorerChartWrap', 'explorerChart', 'Select indicators after DHIS2 sync is available');
+  document.getElementById('explorerChips').innerHTML = '<span class="chip-empty">No indicators selected</span>';
+}
+
+function clearSelection() {
+  selectedIndicators = [];
+  document.querySelectorAll('.indicator-item').forEach(el => el.classList.remove('selected'));
+  updateSelectedCount();
+  clearExplorerChart();
+}
+
+function filterIndicators() {
+  const q = document.getElementById('indicatorSearch').value.toLowerCase();
+  const filtered = q ? allIndicators.filter(i => i.name.toLowerCase().includes(q) || (i.short||'').toLowerCase().includes(q)) : allIndicators;
+  renderIndicatorList(filtered);
+  // Re-mark selections
+  selectedIndicators.forEach(s => document.getElementById('item-' + s.id)?.classList.add('selected'));
+}
+
+// ── Explorer chart ────────────────────────────────────────────────────────────
+
+function applyExplorer() {
+  if (!selectedIndicators.length) return;
+  renderExplorerChips();
+  loadExplorerChart();
+}
+
+function renderExplorerChips() {
+  const chips = document.getElementById('explorerChips');
+  if (!selectedIndicators.length) {
+    chips.innerHTML = '<span class="chip-empty">No indicators selected</span>';
+    return;
+  }
+  chips.innerHTML = selectedIndicators.map(i =>
+    `<span class="chip">${i.short || i.name} <span class="chip-remove" onclick="removeFromExplorer('${i.id}')">×</span></span>`
+  ).join('');
+}
+
+function removeFromExplorer(id) {
+  selectedIndicators = selectedIndicators.filter(s => s.id !== id);
+  document.getElementById('item-' + id)?.classList.remove('selected');
+  updateSelectedCount();
+  applyExplorer();
+}
+
+function clearExplorerChart() {
+  destroyChart('explorer');
+  document.getElementById('explorerChartWrap').innerHTML = '<div class="chart-loading" style="height:160px;">Select indicators from the sidebar →</div>';
+  document.getElementById('explorerChart').style.display = 'none';
+  document.getElementById('explorerChips').innerHTML = '<span class="chip-empty">No indicators selected</span>';
+}
+
+async function loadExplorerChart() {
+  renderExplorerChips();
+  const ou = getOU();
+  const pe = getPE();
+  const dxIds = uniqueDx(selectedIndicators).join(';');
+
+  document.getElementById('explorerChartWrap').innerHTML = '<div class="chart-loading"><div class="spinner"></div>Fetching data…</div>';
+  document.getElementById('explorerChart').style.display = 'none';
+
+  try {
+    const data = await apiFetch(`/api/analytics?dx=${encodeURIComponent(dxIds)}&ou=${encodeURIComponent(ou)}&pe=${encodeURIComponent(pe)}`);
+    renderExplorerChartFromAnalytics(data);
+  } catch(e) {
+    setChartMessage('explorerChartWrap', 'explorerChart', 'Unable to load explorer data from DHIS2');
+  }
+}
+
+function parseAnalytics(data) {
+  if (!data || !data.rows) return { labels:[], datasets:[] };
+  const meta = data.metaData || {};
+  const headers = (data.headers || []).map(h => h.name);
+  const dxIdx = headers.indexOf('dx');
+  const peIdx = headers.indexOf('pe');
+  const ouIdx = headers.indexOf('ou');
+  const valIdx = headers.indexOf('value');
+
+  const periods = [...new Set(data.rows.map(r => r[peIdx]))];
+  const dxIds   = [...new Set(data.rows.map(r => r[dxIdx]))];
+
+  const periodLabels = periods.map(p => (meta.items?.[p]?.name || p));
+  const datasets = dxIds.map((dxId, i) => ({
+    label: meta.items?.[dxId]?.name || dxId,
+    data: periods.map(p => {
+      const row = data.rows.find(r => r[dxIdx]===dxId && r[peIdx]===p);
+      return row ? parseFloat(row[valIdx]) : 0;
+    }),
+    borderColor: CHART_COLORS[i % CHART_COLORS.length],
+    backgroundColor: CHART_COLORS[i % CHART_COLORS.length] + '22',
+    fill: false, tension: 0.4, pointRadius: 4, borderWidth: 2,
+  }));
+
+  return { labels: periodLabels, datasets };
+}
+
+function parseAnalyticsByOU(data) {
+  if (!data || !data.rows) return { labels:[], datasets:[] };
+  const meta = data.metaData || {};
+  const headers = (data.headers || []).map(h => h.name);
+  const dxIdx = headers.indexOf('dx');
+  const peIdx = headers.indexOf('pe');
+  const ouIdx = headers.indexOf('ou');
+  const valIdx = headers.indexOf('value');
+
+  const ouIds = [...new Set(data.rows.map(r => r[ouIdx]))];
+  const dxIds = [...new Set(data.rows.map(r => r[dxIdx]))];
+
+  const labels = ouIds.map(ouId => normalizeOrgUnitLabel(meta.items?.[ouId]?.name || ouId));
+  const datasets = dxIds.map((dxId, index) => ({
+    label: meta.items?.[dxId]?.name || dxId,
+    data: ouIds.map(ouId =>
+      data.rows
+        .filter(r => r[dxIdx] === dxId && r[ouIdx] === ouId)
+        .reduce((sum, row) => sum + (parseFloat(row[valIdx]) || 0), 0)
+    ),
+    borderColor: CHART_COLORS[index % CHART_COLORS.length],
+    backgroundColor: CHART_COLORS[index % CHART_COLORS.length],
+    fill: false,
+    tension: 0.35,
+    pointRadius: 3,
+    borderWidth: 2,
+  }));
+
+  return { labels, datasets };
+}
+
+function sumAggregateValuesByDx(data, dxId) {
+  if (!data || !data.rows || !data.headers) return null;
+  const headers = data.headers.map(h => h.name);
+  const dxIdx = headers.indexOf('dx');
+  const valueIdx = headers.indexOf('value');
+  const total = data.rows
+    .filter(row => row[dxIdx] === dxId)
+    .reduce((sum, row) => sum + (parseFloat(row[valueIdx]) || 0), 0);
+  return total || total === 0 ? total : null;
+}
+
+function findIndicatorsByNames(names) {
+  return names
+    .map(name => allIndicators.find(ind => ind.name === name))
+    .filter(Boolean);
+}
+
+async function renderTrendChart(canvasId, wrapId, indicators, ou, pe, options={}) {
+  if (!indicators.length) {
+    setChartMessage(wrapId, canvasId, 'No curated malaria indicators configured for this chart');
+    return;
+  }
+
+  try {
+    const dxIds = uniqueDx(indicators).join(';');
+    const selectedOrgUnits = getSelectedValues('ouSelect');
+    const selectedPeriods = getSelectedPeriods();
+    const multiplePeriods = selectedPeriods.length > 1;
+    const xAxisMode = getXAxisMode();
+    const forceOrgAxis = xAxisMode === 'org';
+    const forcePeriodAxis = xAxisMode === 'period';
+    const compareByOrgUnit = forceOrgAxis || (xAxisMode === 'auto' && selectedOrgUnits.length > 1 && !multiplePeriods);
+    const singleOrgUnitBar = xAxisMode === 'auto' && selectedOrgUnits.length === 1 && !multiplePeriods;
+    const data = compareByOrgUnit
+      ? await apiFetch(`/api/analytics?dx=${encodeURIComponent(dxIds)}&ou=${encodeURIComponent(ou)}&pe=${encodeURIComponent(pe)}`)
+      : await apiFetch(`/api/analytics/aggregate?dx=${encodeURIComponent(dxIds)}&ou=${encodeURIComponent(ou)}&pe=${encodeURIComponent(pe)}`);
+    const parsed = compareByOrgUnit ? parseAnalyticsByOU(data) : parseAnalytics(data);
+    if (!parsed.labels.length) {
+      setChartMessage(wrapId, canvasId, 'No DHIS2 data returned for the selected malaria indicators');
+      return;
+    }
+
+    parsed.datasets = parsed.datasets.map((dataset, index) => ({
+      ...dataset,
+      borderColor: CHART_COLORS[index % CHART_COLORS.length],
+      backgroundColor: options.type === 'bar'
+        ? CHART_COLORS[index % CHART_COLORS.length]
+        : CHART_COLORS[index % CHART_COLORS.length] + '22',
+      fill: false,
+      tension: 0.35,
+      pointRadius: 3,
+      borderWidth: 2,
+      borderRadius: (options.type === 'bar' || singleOrgUnitBar) ? 5 : undefined,
+    }));
+
+    if (forceOrgAxis) {
+      renderBarChart(canvasId, wrapId, parsed.labels, parsed.datasets, options.barOptions || {});
+    } else if (forcePeriodAxis || multiplePeriods) {
+      renderLineChart(canvasId, wrapId, parsed.labels, parsed.datasets, false);
+    } else if (options.type === 'bar' || compareByOrgUnit || singleOrgUnitBar) {
+      const barOptions = (singleOrgUnitBar && parsed.labels.length > 6)
+        ? { ...(options.barOptions || {}), indexAxis: 'y' }
+        : (options.barOptions || {});
+      renderBarChart(canvasId, wrapId, parsed.labels, parsed.datasets, barOptions);
+    } else {
+      renderLineChart(canvasId, wrapId, parsed.labels, parsed.datasets, false);
+    }
+  } catch (e) {
+    setChartMessage(wrapId, canvasId, options.errorMessage || 'Unable to load malaria chart from DHIS2');
+  }
+}
+
+function renderExplorerChartFromAnalytics(data) {
+  const parsed = parseAnalytics(data);
+  if (!parsed.labels.length) {
+    setChartMessage('explorerChartWrap', 'explorerChart', 'No DHIS2 data returned for the selected indicators');
+    return;
+  }
+
+  destroyChart('explorer');
+  document.getElementById('explorerChartWrap').style.display = 'none';
+  document.getElementById('explorerChart').style.display = 'block';
+
+  const cfg = chartDefaults();
+  cfg.plugins.legend.position = 'top';
+  cfg.plugins.datalabels = { display: false };
+
+  charts.explorer = new Chart(document.getElementById('explorerChart'), {
+    type: 'line',
+    data: parsed,
+    options: { ...cfg, interaction:{ mode:'index', intersect:false } }
+  });
+}
+
+// ── KPI rendering ─────────────────────────────────────────────────────────────
+
+function renderKPIs(containerId, kpis, color) {
+  document.getElementById(containerId).innerHTML = kpis.map((k, i) =>
+    `<div class="kpi-card kpi-c${(i%4)+1}">
+      <div class="kpi-label">${k.label}</div>
+      <div class="kpi-value">${fmt(k.value)}</div>
+      <div class="kpi-sub">${k.sub || ''}</div>
+    </div>`
+  ).join('');
+}
+
+function renderSkeletonKPIs(id, n=4) {
+  document.getElementById(id).innerHTML = Array(n).fill(0).map((_,i)=>
+    `<div class="kpi-card kpi-c${(i%4)+1}">
+      <div class="kpi-label skeleton" style="width:60%;height:10px;margin-bottom:10px;"></div>
+      <div class="skeleton" style="width:50%;height:24px;"></div>
+    </div>`
+  ).join('');
+}
+
+// ── Chart helpers ─────────────────────────────────────────────────────────────
+
+function renderBarChart(canvasId, wrapId, labels, datasets, extra={}) {
+  destroyChart(canvasId);
+  showCanvas(canvasId, wrapId);
+
+  const canvas = document.getElementById(canvasId);
+  const opts = chartDefaults();
+  if (extra.indexAxis) opts.indexAxis = extra.indexAxis;
+  if (extra.stacked) { opts.scales.x.stacked = true; opts.scales.y.stacked = true; }
+  opts.plugins.datalabels = { display: false };
+  if (extra.indexAxis === 'y') {
+    // Give horizontal org-unit comparison charts enough vertical room for unit labels.
+    canvas.style.height = `${Math.max(260, labels.length * 28)}px`;
+    opts.scales.y.ticks = {
+      ...opts.scales.y.ticks,
+      autoSkip: false,
+      font: { size: 11 },
+    };
+    opts.scales.x.ticks = {
+      ...opts.scales.x.ticks,
+      maxRotation: 0,
+      minRotation: 0,
+    };
+    opts.scales.x.title = {
+      display: true,
+      text: 'Value',
+      color: '#8892a4',
+      font: { size: 10 },
+    };
+  } else {
+    canvas.style.height = '';
+    opts.scales.x.ticks = {
+      ...opts.scales.x.ticks,
+      autoSkip: false,
+      maxRotation: 45,
+      minRotation: 45,
+      font: { size: 10 },
+    };
+  }
+
+  charts[canvasId] = new Chart(canvas, {
+    type: 'bar',
+    data: { labels, datasets },
+    options: opts,
+  });
+}
+
+function renderLineChart(canvasId, wrapId, labels, datasets, dualAxis=false) {
+  destroyChart(canvasId);
+  showCanvas(canvasId, wrapId);
+
+  const opts = chartDefaults();
+  opts.plugins.datalabels = { display: false };
+
+  if (dualAxis) {
+    opts.scales.y  = { ...opts.scales.y, type:'linear', position:'left', title:{display:true,text:'Incidence',color:'#E8A838',font:{size:10}} };
+    opts.scales.y1 = { type:'linear', position:'right', grid:{drawOnChartArea:false}, ticks:{color:'#E6534F'}, title:{display:true,text:'Mortality',color:'#E6534F',font:{size:10}} };
+    datasets[1].yAxisID = 'y1';
+  }
+
+  charts[canvasId] = new Chart(document.getElementById(canvasId), {
+    type: 'line',
+    data: { labels, datasets },
+    options: { ...opts, interaction:{ mode:'index', intersect:false } },
+  });
+}
+
+// ── Live data loading from DHIS2 ──────────────────────────────────────────────
+
+async function loadLiveData() {
+  if (!dashboardConfig) return;
+
+  const ou = getOU();
+  const pe = getPE();
+  hideOfflineNotice();
+
+  // Helper: build dx string for a category
+  function itemsFor(cat) { return dashboardConfig[cat] || []; }
+  function dx(cat) { return uniqueDx(itemsFor(cat)).join(';'); }
+  function featured(cat) { return uniqueItemsByDx(itemsFor(cat)).slice(0,4); }
+
+  // KPIs — aggregate totals
+  const cats = ['prevention','diagnosis','treatment','impact'];
+  for (const cat of cats) {
+    renderSkeletonKPIs('kpi' + cat.charAt(0).toUpperCase() + cat.slice(1), 4);
+    try {
+      const data = await apiFetch(`/api/analytics/aggregate?dx=${encodeURIComponent(dx(cat))}&ou=${encodeURIComponent(ou)}&pe=${encodeURIComponent(pe)}`);
+      // Parse aggregate response
+      const kpis = featured(cat).map(ind => {
+        return {
+          label: ind.short || ind.name,
+          value: sumAggregateValuesByDx(data, ind.dx || ind.id),
+          sub: ind.name,
+        };
+      });
+      renderKPIs('kpi' + cat.charAt(0).toUpperCase() + cat.slice(1), kpis);
+    } catch(e) {
+      renderUnavailableKPIs(
+        'kpi' + cat.charAt(0).toUpperCase() + cat.slice(1),
+        featured(cat).map(ind => ind.short || ind.name),
+        'Unavailable from DHIS2'
+      );
+    }
+  }
+
+  // For charts, try analytics
+  updateChartContextLabels();
+
+  await renderTrendChart(
+    'itnChart',
+    'itnChartWrap',
+    findIndicatorsByNames(['Children <5 yrs who received LLIN', 'PW who received LLIN']),
+    ou,
+    pe,
+    { type: 'bar', errorMessage: 'Unable to load LLIN malaria indicators from DHIS2' }
+  );
+
+  await renderTrendChart(
+    'llinCoverageChart',
+    'llinCoverageChartWrap',
+    findIndicatorsByNames(['% Under 5 receiving LLIN', '% of Antenatal 1st Visits receiving LLIN']),
+    ou,
+    pe,
+    { type: 'line', errorMessage: 'Unable to load LLIN coverage indicators from DHIS2' }
+  );
+
+  await renderTrendChart(
+    'ancIptChart',
+    'ancIptChartWrap',
+    findIndicatorsByNames(['% of all Antenatal care clients receiving malaria IPT']),
+    ou,
+    pe,
+    { type: 'line', errorMessage: 'Unable to load antenatal malaria IPT indicator from DHIS2' }
+  );
+
+  await renderTrendChart(
+    'iptpCoverageChart',
+    'iptpCoverageChartWrap',
+    findIndicatorsByNames([
+      'IPTp1 Coverage (institutional)',
+      'IPTp2 Coverage (institutional)',
+      'IPTp3 Coverage (institutional)',
+      'IPTp>=4 Coverage (institutional)'
+    ]),
+    ou,
+    pe,
+    { type: 'line', errorMessage: 'Unable to load institutional IPTp coverage indicators from DHIS2' }
+  );
+
+  await renderTrendChart(
+    'confirmedMalariaChart',
+    'confirmedMalariaChartWrap',
+    findIndicatorsByNames(['% Confirmed Malaria (RDT or Microscopy)']),
+    ou,
+    pe,
+    { type: 'line', errorMessage: 'Unable to load confirmed malaria indicator from DHIS2' }
+  );
+
+  await renderTrendChart(
+    'confirmedUncompChart',
+    'confirmedUncompChartWrap',
+    findIndicatorsByNames(['% Confirmed uncomplicated Malaria']),
+    ou,
+    pe,
+    { type: 'line', errorMessage: 'Unable to load confirmed uncomplicated malaria indicator from DHIS2' }
+  );
+
+  await renderTrendChart(
+    'microTestChart',
+    'microTestChartWrap',
+    findIndicatorsByNames(['% of Fever cases Tested with Microscopy']),
+    ou,
+    pe,
+    { type: 'line', errorMessage: 'Unable to load microscopy testing indicator from DHIS2' }
+  );
+
+  await renderTrendChart(
+    'rdtTestChart',
+    'rdtTestChartWrap',
+    findIndicatorsByNames(['% of Fever cases Tested with RDT']),
+    ou,
+    pe,
+    { type: 'line', errorMessage: 'Unable to load RDT testing indicator from DHIS2' }
+  );
+
+  await renderTrendChart(
+    'parasitologicalTestChart',
+    'parasitologicalTestChartWrap',
+    findIndicatorsByNames(['% of suspected malaria receiving parasitological test']),
+    ou,
+    pe,
+    { type: 'line', errorMessage: 'Unable to load parasitological testing coverage indicator from DHIS2' }
+  );
+
+  await renderTrendChart(
+    'feverTestingRateChart',
+    'feverTestingRateChartWrap',
+    findIndicatorsByNames(['Fever Testing Rate']),
+    ou,
+    pe,
+    { type: 'line', errorMessage: 'Unable to load fever testing rate indicator from DHIS2' }
+  );
+
+  await renderTrendChart(
+    'microPositiveChart',
+    'microPositiveChartWrap',
+    findIndicatorsByNames(['% of Fever cases tested positive with Microscopy']),
+    ou,
+    pe,
+    { type: 'line', errorMessage: 'Unable to load microscopy positivity indicator from DHIS2' }
+  );
+
+  await renderTrendChart(
+    'rdtPositiveChart',
+    'rdtPositiveChartWrap',
+    findIndicatorsByNames(['% of Fever cases tested positive with RDT']),
+    ou,
+    pe,
+    { type: 'line', errorMessage: 'Unable to load RDT positivity indicator from DHIS2' }
+  );
+
+  await renderTrendChart(
+    'clinicalMixChart',
+    'clinicalMixChartWrap',
+    findIndicatorsByNames(['% of Malaria cases clinically diagnosed']),
+    ou,
+    pe,
+    { type: 'line', errorMessage: 'Unable to load clinical malaria diagnosis indicator from DHIS2' }
+  );
+
+  await renderTrendChart(
+    'microTprChart',
+    'microTprChartWrap',
+    findIndicatorsByNames(['Test Positivity Rate(TPR) (Microscopy)']),
+    ou,
+    pe,
+    { type: 'line', errorMessage: 'Unable to load microscopy test positivity rate indicator from DHIS2' }
+  );
+
+  await renderTrendChart(
+    'rdtTprChart',
+    'rdtTprChartWrap',
+    findIndicatorsByNames(['Test Positivity Rate(TPR) (RDT)']),
+    ou,
+    pe,
+    { type: 'line', errorMessage: 'Unable to load RDT test positivity rate indicator from DHIS2' }
+  );
+
+  await renderTrendChart(
+    'actChart',
+    'actChartWrap',
+    findIndicatorsByNames([
+      '% of confirmed uncomplicated malaria given ACT',
+      '% of confirmed uncomplicated malaria given other antimalaria'
+    ]),
+    ou,
+    pe,
+    { type: 'line', errorMessage: 'Unable to load treatment outcome percentage indicators from DHIS2' }
+  );
+
+  await renderTrendChart(
+    'severeChart',
+    'severeChartWrap',
+    findIndicatorsByNames([
+      'Persons Clinically diagnosed with Malaria treated with ACT <5yrs',
+      'Persons Clinically diagnosed with Malaria treated with ACT >=5yrs (excl PW)',
+      'Persons Clinically diagnosed with Malaria treated with ACT PW',
+      'Confirmed Uncomplicated treated with ACT <5yrs',
+      'Confirmed Uncomplicated treated with ACT >=5yrs (excl PW)',
+      'Confirmed Uncomplicated treated with ACT PW',
+      'Treated with other antimalarials <5yrs',
+      'Treated with other antimalarials >=5yrs (excl PW)',
+      'Treated with other antimalarials PW'
+    ]),
+    ou,
+    pe,
+    { type: 'bar', errorMessage: 'Unable to load malaria treatment volume indicators from DHIS2' }
+  );
+
+  await renderTrendChart(
+    'burdenChart',
+    'burdenChartWrap',
+    findIndicatorsByNames(['% of Under 5 deaths attributable to Malaria']),
+    ou,
+    pe,
+    { type: 'line', errorMessage: 'Unable to load under-5 malaria death attribution indicator from DHIS2' }
+  );
+}
+
+// ── Refresh all ───────────────────────────────────────────────────────────────
+
+async function refreshAll() {
+  try {
+    await apiPost('/api/sync/run', { validation_mode: 'sample' });
+  } catch (e) {
+    // checkHealth below will surface the latest sync status
+  }
+  const online = await checkHealth();
+  if (online) {
+    await loadLiveData();
+  } else {
+    renderUnavailableState('DHIS2 sync unavailable');
+  }
+}
+
+// ── Init ──────────────────────────────────────────────────────────────────────
+
+async function init() {
+  setStatus('loading','Initializing…');
+  document.getElementById('copyrightYear').textContent = String(new Date().getFullYear());
+
+  // Load skeleton KPIs while connecting
+  ['Prevention','Diagnosis','Treatment','Impact'].forEach(c => renderSkeletonKPIs('kpi'+c, 4));
+
+  try { await loadDashboardConfig(); }
+  catch (e) {
+    document.getElementById('indicatorList').innerHTML = `<div style="padding:12px;color:var(--accent4);font-size:12px">${e.message}</div>`;
+  }
+
+  try { await loadPeriods(); } catch (e) {}
+  try { await loadOrgUnitLevels(); } catch (e) {}
+  try { await loadOrgUnitGroups(); } catch (e) {}
+  try { await loadOrgUnits(); } catch (e) {}
+
+  try {
+    const online = await checkHealth();
+    if (online) {
+      await loadLiveData();
+    } else {
+      renderUnavailableState('DHIS2 sync unavailable');
+    }
+  } catch(e) {
+    setStatus('offline','Error: ' + e.message);
+    showOfflineNotice(e.message);
+    renderUnavailableState('Initialization failed');
+  }
+}
+
+init();
+</script>
+</body>
+</html>

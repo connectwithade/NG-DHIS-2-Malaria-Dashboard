@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: dhis2-malaria-dashboard
+    runtime: python
+    plan: starter
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    autoDeploy: true
+    envVars:
+      - key: DHIS2_BASE
+        value: https://dhis2nigeria.org.ng/dhis
+      - key: DHIS2_TIMEOUT
+        value: "30"
+      - key: DHIS2_USER
+        sync: false
+      - key: DHIS2_PASS
+        sync: false
