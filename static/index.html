@@ -26,21 +26,16 @@
   --header-h: 56px;
   --radius: 10px;
   --shadow: 0 4px 20px rgba(0,0,0,0.4);
-<<<<<<< HEAD
-=======
   --header-bg: linear-gradient(90deg, #0a2342 0%, #0d1f3c 50%, #0e1117 100%);
   --header-title: #ffffff;
   --brand-strip-bg: rgba(255,255,255,0.03);
   --path-wrap-bg: rgba(255,255,255,0.96);
   --theme-toggle-bg: rgba(255,255,255,0.04);
   --theme-toggle-hover: rgba(17,141,255,0.14);
->>>>>>> eb49461 (updated files)
 }
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; }
 body { background: var(--bg); color: var(--text); font-family: 'Segoe UI', system-ui, -apple-system, sans-serif; display: flex; flex-direction: column; overflow: hidden; }
-<<<<<<< HEAD
-=======
 body[data-theme="light"] {
   --bg: #f4f7fb;
   --sidebar: #edf3f9;
@@ -57,16 +52,11 @@ body[data-theme="light"] {
   --theme-toggle-bg: rgba(19,32,51,0.05);
   --theme-toggle-hover: rgba(17,141,255,0.1);
 }
->>>>>>> eb49461 (updated files)
 
 /* ── HEADER ── */
 .header {
   height: var(--header-h); min-height: var(--header-h);
-<<<<<<< HEAD
-  background: linear-gradient(90deg, #0a2342 0%, #0d1f3c 50%, #0e1117 100%);
-=======
   background: var(--header-bg);
->>>>>>> eb49461 (updated files)
   border-bottom: 1px solid var(--border);
   display: flex; align-items: center; justify-content: space-between;
   gap: 12px;
@@ -74,28 +64,17 @@ body[data-theme="light"] {
 }
 .header-left { display: flex; align-items: center; gap: 12px; }
 .logo { width: 30px; height: 30px; background: var(--accent); border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 900; color: #fff; }
-<<<<<<< HEAD
-.header-title { font-size: 15px; font-weight: 700; color: #fff; }
-.header-sub { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
-.header-center { display: flex; align-items: center; gap: 10px; }
-.brand-strip { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 999px; background: rgba(255,255,255,0.03); }
-=======
 .header-title { font-size: 15px; font-weight: 700; color: var(--header-title); }
 .header-sub { font-size: 10px; color: var(--text-muted); margin-top: 1px; }
 .header-center { display: flex; align-items: center; gap: 10px; }
 .brand-strip { display: flex; align-items: center; gap: 10px; padding: 6px 10px; border: 1px solid var(--border); border-radius: 999px; background: var(--brand-strip-bg); }
->>>>>>> eb49461 (updated files)
 .brand-logo { height: 18px; width: auto; display: block; object-fit: contain; }
 .brand-plus { color: var(--text-muted); font-size: 11px; font-weight: 700; }
 .brand-path-wrap {
   display: flex;
   align-items: center;
   padding: 3px 8px;
-<<<<<<< HEAD
-  background: rgba(255,255,255,0.96);
-=======
   background: var(--path-wrap-bg);
->>>>>>> eb49461 (updated files)
   border-radius: 999px;
 }
 .brand-path { height: 14px; }
@@ -108,8 +87,6 @@ body[data-theme="light"] {
 .status-label { font-size: 11px; color: var(--text-muted); }
 .btn-refresh { background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); padding: 5px 12px; border-radius: 6px; font-size: 11px; cursor: pointer; transition: all 0.2s; }
 .btn-refresh:hover { border-color: var(--accent); color: var(--accent); }
-<<<<<<< HEAD
-=======
 .theme-toggle {
   background: var(--theme-toggle-bg);
   border: 1px solid var(--border);
@@ -125,7 +102,13 @@ body[data-theme="light"] {
   border-color: var(--accent);
   background: var(--theme-toggle-hover);
 }
->>>>>>> eb49461 (updated files)
+.theme-toggle-floating {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 1200;
+  box-shadow: var(--shadow);
+}
 .last-sync { font-size: 10px; color: var(--text-muted); }
 
 /* ── BODY LAYOUT ── */
@@ -169,10 +152,7 @@ body[data-theme="light"] {
   background-repeat: no-repeat; background-position: right 10px center;
 }
 .filter-select option { background: #1e2635; }
-<<<<<<< HEAD
-=======
 body[data-theme="light"] .filter-select option { background: #ffffff; }
->>>>>>> eb49461 (updated files)
 .filter-multiselect option:checked {
   background: linear-gradient(0deg, var(--accent), var(--accent));
   color: #fff;
@@ -181,8 +161,6 @@ body[data-theme="light"] .filter-select option { background: #ffffff; }
   background: linear-gradient(0deg, var(--accent), var(--accent));
   color: #fff;
 }
-<<<<<<< HEAD
-=======
 body[data-theme="light"] .filter-multiselect option:checked {
   background: linear-gradient(0deg, rgba(17,141,255,0.18), rgba(17,141,255,0.18));
   color: #0f5fa8;
@@ -191,7 +169,6 @@ body[data-theme="light"] .filter-multiselect:focus option:checked {
   background: linear-gradient(0deg, rgba(17,141,255,0.18), rgba(17,141,255,0.18));
   color: #0f5fa8;
 }
->>>>>>> eb49461 (updated files)
 .filter-multiselect {
   min-height: 112px;
   background-image: none;
@@ -202,8 +179,6 @@ body[data-theme="light"] .filter-multiselect:focus option:checked {
   color: var(--text-muted);
   margin: -4px 0 8px;
 }
-<<<<<<< HEAD
-=======
 .filter-actions {
   display: flex;
   gap: 6px;
@@ -226,7 +201,6 @@ body[data-theme="light"] .filter-multiselect:focus option:checked {
   background: rgba(17,141,255,0.16);
   border-color: rgba(17,141,255,0.38);
 }
->>>>>>> eb49461 (updated files)
 .toggle-row {
   display: flex;
   align-items: center;
@@ -257,10 +231,7 @@ body[data-theme="light"] .filter-multiselect:focus option:checked {
   cursor: pointer; display: flex; align-items: center; justify-content: space-between;
   user-select: none;
 }
-<<<<<<< HEAD
-=======
 body[data-theme="light"] .indicator-group-header { background: rgba(19,32,51,0.05); }
->>>>>>> eb49461 (updated files)
 .indicator-group-header:hover { background: rgba(17,141,255,0.08); }
 .group-arrow { transition: transform 0.2s; }
 .group-arrow.open { transform: rotate(90deg); }
@@ -273,14 +244,11 @@ body[data-theme="light"] .indicator-group-header { background: rgba(19,32,51,0.0
 }
 .indicator-item:hover { background: rgba(17,141,255,0.1); }
 .indicator-item.selected { background: rgba(17,141,255,0.15); color: var(--accent); }
-<<<<<<< HEAD
-=======
 body[data-theme="light"] .indicator-item.selected {
   background: linear-gradient(90deg, rgba(17,141,255,0.18) 0 4px, rgba(17,141,255,0.10) 4px 100%);
   color: #0f5fa8;
   font-weight: 600;
 }
->>>>>>> eb49461 (updated files)
 .cb { width: 13px; height: 13px; border: 1.5px solid var(--border); border-radius: 3px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; }
 .indicator-item.selected .cb { background: var(--accent); border-color: var(--accent); }
 .cb-check { color: #fff; font-size: 9px; display: none; }
@@ -315,12 +283,9 @@ body[data-theme="light"] .indicator-item.selected {
   border: 1px solid rgba(17,141,255,0.25); border-radius: var(--radius);
   padding: 12px 16px; display: flex; align-items: center; gap: 12px;
 }
-<<<<<<< HEAD
-=======
 body[data-theme="light"] .banner {
   background: linear-gradient(135deg, #ffffff 0%, #f1f7ff 100%);
 }
->>>>>>> eb49461 (updated files)
 .banner-icon { font-size: 22px; }
 .banner-title { font-size: 13px; font-weight: 600; color: var(--text); }
 .banner-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
@@ -380,11 +345,6 @@ body[data-theme="light"] .banner {
 }
 .chart-card:hover { box-shadow: var(--shadow); }
 .cc-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 12px; }
-<<<<<<< HEAD
-.cc-title { font-size: 13px; font-weight: 600; color: var(--text); }
-.cc-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
-.cc-badge { background: var(--surface2); border: 1px solid var(--border); color: var(--text-muted); padding: 3px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; white-space: nowrap; }
-=======
 .cc-header-main {
   display: flex;
   align-items: flex-start;
@@ -426,7 +386,6 @@ body[data-theme="light"] .banner {
   opacity: 0.45;
   cursor: not-allowed;
 }
->>>>>>> eb49461 (updated files)
 canvas { width: 100% !important; }
 .chart-loading { display: flex; align-items: center; justify-content: center; height: 200px; color: var(--text-muted); font-size: 13px; flex-direction: column; gap: 10px; }
 .spinner { width: 24px; height: 24px; border: 2px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
@@ -440,10 +399,7 @@ canvas { width: 100% !important; }
   background: rgba(16, 22, 33, 0.55);
   overflow: hidden;
 }
-<<<<<<< HEAD
-=======
 body[data-theme="light"] .ou-level { background: rgba(255,255,255,0.88); }
->>>>>>> eb49461 (updated files)
 .ou-level summary {
   list-style: none;
   cursor: pointer;
@@ -467,23 +423,17 @@ body[data-theme="light"] .ou-level { background: rgba(255,255,255,0.88); }
   background: rgba(17, 141, 255, 0.12);
   color: #dfe8ff;
 }
-<<<<<<< HEAD
-=======
 body[data-theme="light"] .ou-level.is-active summary {
   background: rgba(17, 141, 255, 0.12);
   color: #0f5fa8;
 }
->>>>>>> eb49461 (updated files)
 .ou-level-body {
   padding: 10px 12px 12px;
   border-top: 1px solid rgba(42, 51, 71, 0.8);
 }
-<<<<<<< HEAD
-=======
 body[data-theme="light"] .ou-level-body {
   border-top-color: rgba(19,32,51,0.08);
 }
->>>>>>> eb49461 (updated files)
 .ou-level-meta {
   font-size: 10px;
   color: var(--text-muted);
@@ -507,25 +457,19 @@ body[data-theme="light"] .ou-level-body {
   color: var(--text-muted);
   font-size: 12px;
 }
-<<<<<<< HEAD
-=======
 body[data-theme="light"] .ou-unit-item { background: rgba(19, 32, 51, 0.04); }
->>>>>>> eb49461 (updated files)
 .ou-unit-item input { accent-color: var(--accent); }
 .ou-unit-item.is-selected {
   background: rgba(17, 141, 255, 0.14);
   color: #e8eefc;
   border: 1px solid rgba(17, 141, 255, 0.3);
 }
-<<<<<<< HEAD
-=======
 body[data-theme="light"] .ou-unit-item.is-selected {
   background: linear-gradient(90deg, rgba(17,141,255,0.18) 0 4px, rgba(17,141,255,0.10) 4px 100%);
   color: #0f5fa8;
   border-color: rgba(17, 141, 255, 0.22);
   font-weight: 600;
 }
->>>>>>> eb49461 (updated files)
 .ou-unit-empty {
   font-size: 12px;
   color: var(--text-muted);
@@ -551,20 +495,15 @@ body[data-theme="light"] .ou-unit-item.is-selected {
   color: var(--accent); padding: 3px 10px; border-radius: 12px; font-size: 11px; font-weight: 500;
   display: flex; align-items: center; gap: 5px;
 }
-<<<<<<< HEAD
-=======
 body[data-theme="light"] .chip {
   background: rgba(17,141,255,0.1);
   border-color: rgba(17,141,255,0.18);
   color: #0f5fa8;
 }
->>>>>>> eb49461 (updated files)
 .chip-remove { cursor: pointer; opacity: 0.7; font-size: 13px; line-height: 1; }
 .chip-remove:hover { opacity: 1; color: var(--red); }
 .chip-empty { font-size: 12px; color: var(--text-muted); font-style: italic; }
 
-<<<<<<< HEAD
-=======
 /* ── CHART PREVIEW ── */
 .chart-preview-modal {
   position: fixed;
@@ -644,20 +583,16 @@ body[data-theme="light"] .chart-preview-head {
   background: #fff;
 }
 
->>>>>>> eb49461 (updated files)
 /* ── OFFLINE BANNER ── */
 .offline-notice {
   background: rgba(230,83,79,0.1); border: 1px solid rgba(230,83,79,0.3);
   border-radius: var(--radius); padding: 14px 18px; text-align: center;
   display: none;
 }
-<<<<<<< HEAD
-=======
 body[data-theme="light"] .offline-notice {
   background: #fff4f3;
   border-color: rgba(230,83,79,0.18);
 }
->>>>>>> eb49461 (updated files)
 .offline-notice.show { display: block; }
 .offline-notice h3 { color: var(--accent4); font-size: 14px; margin-bottom: 6px; }
 .offline-notice p { color: var(--text-muted); font-size: 12px; line-height: 1.6; }
@@ -706,16 +641,14 @@ body[data-theme="light"] .offline-notice {
     padding: 7px 10px;
     font-size: 10px;
   }
+  .theme-toggle-floating {
+    right: 12px;
+    bottom: 12px;
+  }
   .last-sync {
     width: 100%;
   }
   .kpi-grid { grid-template-columns: 1fr 1fr; }
-<<<<<<< HEAD
-}
-</style>
-</head>
-<body>
-=======
   .chart-preview-modal { padding: 12px; }
   .chart-preview-head {
     flex-direction: column;
@@ -725,7 +658,6 @@ body[data-theme="light"] .offline-notice {
 </style>
 </head>
 <body data-theme="dark">
->>>>>>> eb49461 (updated files)
 
 <!-- HEADER -->
 <header class="header">
@@ -748,14 +680,13 @@ body[data-theme="light"] .offline-notice {
   <div class="header-right">
     <span class="status-dot loading" id="statusDot"></span>
     <span class="status-label" id="statusLabel">Connecting…</span>
-<<<<<<< HEAD
-=======
     <button class="theme-toggle" id="themeToggle" type="button" onclick="toggleTheme()">Light Mode</button>
->>>>>>> eb49461 (updated files)
     <button class="btn-refresh" onclick="refreshAll()">↺ Refresh</button>
     <span class="last-sync" id="lastSync"></span>
   </div>
 </header>
+
+<button class="theme-toggle theme-toggle-floating" id="themeToggleFloating" type="button" onclick="toggleTheme()">Light Mode</button>
 
 <div class="body-wrap">
 
@@ -768,12 +699,6 @@ body[data-theme="light"] .offline-notice {
     <div class="filter-label">Select Level</div>
     <select class="filter-select" id="ouLevel" onchange="handleLevelSelection(this.value)"></select>
     <div class="filter-label">Group</div>
-<<<<<<< HEAD
-    <select class="filter-select" id="ouGroup" onchange="loadOrgUnits()">
-      <option value="">All Groups</option>
-    </select>
-    <div class="filter-label">Levels and Units</div>
-=======
     <select class="filter-select" id="ouGroup" onchange="handleGroupSelection()">
       <option value="">All Groups</option>
     </select>
@@ -782,7 +707,6 @@ body[data-theme="light"] .offline-notice {
       <button type="button" class="filter-action-btn" onclick="bulkToggleOrgUnits(true)">Select All Visible</button>
       <button type="button" class="filter-action-btn" onclick="bulkToggleOrgUnits(false)">Clear Visible</button>
     </div>
->>>>>>> eb49461 (updated files)
     <div class="ou-tree" id="ouLevelTree">
       <div class="ou-unit-empty">Loading organization unit levels…</div>
     </div>
@@ -794,10 +718,6 @@ body[data-theme="light"] .offline-notice {
   <div class="sidebar-section">
     <div class="sidebar-section-title">Time Period</div>
     <div class="filter-label">Years</div>
-<<<<<<< HEAD
-    <select class="filter-select filter-multiselect" id="yearSelect" multiple onchange="refreshAll()"></select>
-    <div class="filter-label">Months</div>
-=======
     <div class="filter-actions">
       <button type="button" class="filter-action-btn" onclick="setMultiSelectState('yearSelect', true)">Select All</button>
       <button type="button" class="filter-action-btn" onclick="setMultiSelectState('yearSelect', false)">Clear</button>
@@ -808,7 +728,6 @@ body[data-theme="light"] .offline-notice {
       <button type="button" class="filter-action-btn" onclick="setMultiSelectState('monthSelect', true)">Select All</button>
       <button type="button" class="filter-action-btn" onclick="setMultiSelectState('monthSelect', false)">Clear</button>
     </div>
->>>>>>> eb49461 (updated files)
     <select class="filter-select filter-multiselect" id="monthSelect" multiple onchange="refreshAll()"></select>
     <div class="filter-hint" id="periodHint">Hold Ctrl or Cmd to select multiple months or years.</div>
   </div>
@@ -882,11 +801,7 @@ body[data-theme="light"] .offline-notice {
     <div class="chart-card">
       <div class="cc-header">
         <div><div class="cc-title">LLIN Distribution Matrix</div><div class="cc-sub">Children under 5 and pregnant women who received LLIN</div></div>
-<<<<<<< HEAD
-        <span class="cc-badge" id="itnBadge">LIVE</span>
-=======
         <span class="cc-badge" id="itnBadge">LLIN</span>
->>>>>>> eb49461 (updated files)
       </div>
       <div id="itnChartWrap"><div class="chart-loading"><div class="spinner"></div>Loading…</div></div>
       <canvas id="itnChart" style="display:none;max-height:250px;"></canvas>
@@ -1045,21 +960,6 @@ body[data-theme="light"] .offline-notice {
   <div class="chart-row c2">
     <div class="chart-card">
       <div class="cc-header">
-<<<<<<< HEAD
-        <div><div class="cc-title">Treatment Outcome Percentages</div><div class="cc-sub">Percent of confirmed uncomplicated malaria treated by ACT or other antimalarials</div></div>
-        <span class="cc-badge">ACT</span>
-      </div>
-      <div id="actChartWrap"><div class="chart-loading"><div class="spinner"></div>Loading…</div></div>
-      <canvas id="actChart" style="display:none;max-height:250px;"></canvas>
-    </div>
-    <div class="chart-card">
-      <div class="cc-header">
-        <div><div class="cc-title">Treatment Volume Mix</div><div class="cc-sub">Clinical ACT, confirmed ACT, and other antimalarial treatment counts</div></div>
-        <span class="cc-badge">TX Mix</span>
-      </div>
-      <div id="severeChartWrap"><div class="chart-loading"><div class="spinner"></div>Loading…</div></div>
-      <canvas id="severeChart" style="display:none;max-height:250px;"></canvas>
-=======
         <div><div class="cc-title">Confirmed Malaria Given ACT %</div><div class="cc-sub">Percent of confirmed uncomplicated malaria treated with ACT</div></div>
         <span class="cc-badge">ACT %</span>
       </div>
@@ -1160,7 +1060,6 @@ body[data-theme="light"] .offline-notice {
       </div>
       <div id="otherAntiPwChartWrap"><div class="chart-loading"><div class="spinner"></div>Loading…</div></div>
       <canvas id="otherAntiPwChart" style="display:none;max-height:250px;"></canvas>
->>>>>>> eb49461 (updated files)
     </div>
   </div>
 
@@ -1204,10 +1103,6 @@ body[data-theme="light"] .offline-notice {
 </main>
 </div>
 
-<<<<<<< HEAD
-<script>
-Chart.register(ChartDataLabels);
-=======
 <div class="chart-preview-modal" id="chartPreviewModal" onclick="handlePreviewBackdrop(event)">
   <div class="chart-preview-panel" id="chartPreviewPanel">
     <div class="chart-preview-head">
@@ -1231,7 +1126,6 @@ const chartDataLabelsPlugin = typeof window.ChartDataLabels !== 'undefined' ? wi
 if (chartingAvailable && chartDataLabelsPlugin) {
   window.Chart.register(chartDataLabelsPlugin);
 }
->>>>>>> eb49461 (updated files)
 
 const API = '';  // Flask backend on same origin
 const CHART_COLORS = ['#118DFF','#12B0A0','#E8A838','#E6534F','#8764B8','#60BFB6','#F9A42A','#FF6B81','#34D399','#A78BFA'];
@@ -1246,12 +1140,6 @@ let orgUnitsByLevel = {};
 let selectedOrgUnitsByLevel = {};
 let periodConfig = null;
 let orgUnitGroupSets = [];
-<<<<<<< HEAD
-const FEDERAL_ORG_UNIT = { id: 's5DPBsdoE8b', name: 'Federal Government', level: 1, parent: null, path: '/s5DPBsdoE8b' };
-
-// ── Helpers ─────────────────────────────────────────────────────────────────
-
-=======
 let currentPreviewCanvasId = null;
 const FEDERAL_ORG_UNIT = { id: 's5DPBsdoE8b', name: 'Federal Government', level: 1, parent: null, path: '/s5DPBsdoE8b' };
 const THEME_STORAGE_KEY = 'nmep-dashboard-theme';
@@ -1265,11 +1153,10 @@ function applyTheme(theme) {
   document.body.dataset.theme = nextTheme;
   localStorage.setItem(THEME_STORAGE_KEY, nextTheme);
 
-  const toggle = document.getElementById('themeToggle');
-  if (toggle) {
+  document.querySelectorAll('.theme-toggle').forEach((toggle) => {
     toggle.textContent = nextTheme === 'light' ? 'Dark Mode' : 'Light Mode';
     toggle.setAttribute('aria-pressed', String(nextTheme === 'light'));
-  }
+  });
 
   const logo = document.querySelector('.brand-logo:not(.brand-path)');
   if (logo) {
@@ -1286,7 +1173,6 @@ function toggleTheme() {
   applyTheme(document.body.dataset.theme === 'light' ? 'dark' : 'light');
 }
 
->>>>>>> eb49461 (updated files)
 function fmt(n) {
   if (n == null || isNaN(n)) return '—';
   if (n >= 1e6) return (n/1e6).toFixed(1) + 'M';
@@ -1348,12 +1234,6 @@ function setActiveOrgLevel(level) {
 
 async function handleLevelSelection(level) {
   setActiveOrgLevel(level);
-<<<<<<< HEAD
-  if (!orgUnitsByLevel[String(level)]?.length) {
-    await loadOrgUnitsForLevel(level);
-    syncHiddenOrgSelection();
-  }
-=======
   await loadOrgUnitsForLevel(level);
   syncHiddenOrgSelection();
   await refreshAll();
@@ -1361,7 +1241,6 @@ async function handleLevelSelection(level) {
 
 async function handleGroupSelection() {
   await loadOrgUnits();
->>>>>>> eb49461 (updated files)
   await refreshAll();
 }
 
@@ -1521,8 +1400,6 @@ function getSelectedValues(id) {
   return Array.from(document.getElementById(id).selectedOptions).map(opt => opt.value);
 }
 
-<<<<<<< HEAD
-=======
 function setMultiSelectState(id, shouldSelect) {
   const select = document.getElementById(id);
   if (!select) return;
@@ -1541,7 +1418,6 @@ function bulkToggleOrgUnits(shouldSelect) {
   refreshAll();
 }
 
->>>>>>> eb49461 (updated files)
 function getSelectedPeriods() {
   if (!periodConfig) return [String(new Date().getFullYear())];
 
@@ -1572,36 +1448,24 @@ function getPE() {
 
 function destroyChart(id) {
   if (charts[id]) { charts[id].destroy(); delete charts[id]; }
-<<<<<<< HEAD
-=======
   syncChartToolbarState(id);
->>>>>>> eb49461 (updated files)
 }
 
 function showCanvas(id, wrapId) {
   document.getElementById(wrapId).style.display = 'none';
   document.getElementById(id).style.display = 'block';
-<<<<<<< HEAD
-=======
   syncChartToolbarState(id);
->>>>>>> eb49461 (updated files)
 }
 
 function showLoading(wrapId, canvasId) {
   document.getElementById(wrapId).innerHTML = '<div class="chart-loading"><div class="spinner"></div>Loading…</div>';
   document.getElementById(wrapId).style.display = 'flex';
   document.getElementById(canvasId).style.display = 'none';
-<<<<<<< HEAD
-}
-
-function chartDefaults() {
-=======
   syncChartToolbarState(canvasId);
 }
 
 function chartDefaults() {
   if (!chartingAvailable) return {};
->>>>>>> eb49461 (updated files)
   return {
     responsive: true,
     plugins: {
@@ -1768,12 +1632,6 @@ async function loadPeriods() {
     monthSel.appendChild(opt);
   });
 
-<<<<<<< HEAD
-  const currentYearOption = Array.from(yearSel.options).find(opt => Number(opt.value) === periodConfig.current_year);
-  const currentMonthOption = Array.from(monthSel.options).find(opt => Number(opt.value) === periodConfig.current_month);
-  if (currentYearOption) currentYearOption.selected = true;
-  if (currentMonthOption) currentMonthOption.selected = true;
-=======
   const defaultMonth = periodConfig.current_month === 1 ? 12 : periodConfig.current_month - 1;
   const defaultYear = periodConfig.current_month === 1 ? periodConfig.current_year - 1 : periodConfig.current_year;
   const defaultYearOption = Array.from(yearSel.options).find(opt => Number(opt.value) === defaultYear)
@@ -1782,7 +1640,6 @@ async function loadPeriods() {
     || Array.from(monthSel.options).find(opt => Number(opt.value) === periodConfig.current_month);
   if (defaultYearOption) defaultYearOption.selected = true;
   if (defaultMonthOption) defaultMonthOption.selected = true;
->>>>>>> eb49461 (updated files)
 
   document.getElementById('periodHint').textContent = `Years 2018-${periodConfig.current_year} confirmed from DHIS2. Current server period: ${periodConfig.server_date}.`;
 }
@@ -1895,13 +1752,9 @@ function hideOfflineNotice() {
 }
 
 function renderUnavailableKPIs(containerId, labels, reason='Awaiting DHIS2 sync') {
-<<<<<<< HEAD
-  document.getElementById(containerId).innerHTML = labels.map((label, i) =>
-=======
   const container = document.getElementById(containerId);
   if (!container) return;
   container.innerHTML = labels.map((label, i) =>
->>>>>>> eb49461 (updated files)
     `<div class="kpi-card kpi-c${(i%4)+1}">
       <div class="kpi-label">${label}</div>
       <div class="kpi-value">—</div>
@@ -1916,8 +1769,6 @@ function setChartMessage(wrapId, canvasId, message) {
   wrap.innerHTML = `<div class="chart-loading">${message}</div>`;
   wrap.style.display = 'flex';
   document.getElementById(canvasId).style.display = 'none';
-<<<<<<< HEAD
-=======
   syncChartToolbarState(canvasId);
 }
 
@@ -2052,7 +1903,6 @@ function enhanceChartCards() {
   });
 
   syncChartToolbarState();
->>>>>>> eb49461 (updated files)
 }
 
 function renderUnavailableState(reason='Awaiting DHIS2 sync') {
@@ -2077,10 +1927,6 @@ function renderUnavailableState(reason='Awaiting DHIS2 sync') {
   setChartMessage('clinicalMixChartWrap', 'clinicalMixChart', reason);
   setChartMessage('microTprChartWrap', 'microTprChart', reason);
   setChartMessage('rdtTprChartWrap', 'rdtTprChart', reason);
-<<<<<<< HEAD
-  setChartMessage('actChartWrap', 'actChart', reason);
-  setChartMessage('severeChartWrap', 'severeChart', reason);
-=======
   setChartMessage('actOutcomeChartWrap', 'actOutcomeChart', reason);
   setChartMessage('otherOutcomeChartWrap', 'otherOutcomeChart', reason);
   setChartMessage('clinicalActUnder5ChartWrap', 'clinicalActUnder5Chart', reason);
@@ -2092,7 +1938,6 @@ function renderUnavailableState(reason='Awaiting DHIS2 sync') {
   setChartMessage('otherAntiUnder5ChartWrap', 'otherAntiUnder5Chart', reason);
   setChartMessage('otherAnti5PlusChartWrap', 'otherAnti5PlusChart', reason);
   setChartMessage('otherAntiPwChartWrap', 'otherAntiPwChart', reason);
->>>>>>> eb49461 (updated files)
   setChartMessage('burdenChartWrap', 'burdenChart', reason);
   setChartMessage('explorerChartWrap', 'explorerChart', 'Select indicators after DHIS2 sync is available');
   document.getElementById('explorerChips').innerHTML = '<span class="chip-empty">No indicators selected</span>';
@@ -2140,40 +1985,23 @@ function removeFromExplorer(id) {
 }
 
 function clearExplorerChart() {
-<<<<<<< HEAD
-  destroyChart('explorer');
-  document.getElementById('explorerChartWrap').innerHTML = '<div class="chart-loading" style="height:160px;">Select indicators from the sidebar →</div>';
-=======
   destroyChart('explorerChart');
   document.getElementById('explorerChartWrap').innerHTML = '<div class="chart-loading" style="height:160px;">Select indicators from the sidebar →</div>';
   document.getElementById('explorerChartWrap').style.display = 'flex';
->>>>>>> eb49461 (updated files)
   document.getElementById('explorerChart').style.display = 'none';
   document.getElementById('explorerChips').innerHTML = '<span class="chip-empty">No indicators selected</span>';
 }
 
-<<<<<<< HEAD
-=======
 function getExplorerSeriesLabel(dxId) {
   const selected = selectedIndicators.find(item => (item.dx || item.id) === dxId);
   return selected?.short || selected?.name || dxId;
 }
 
->>>>>>> eb49461 (updated files)
 async function loadExplorerChart() {
   renderExplorerChips();
   const ou = getOU();
   const pe = getPE();
   const dxIds = uniqueDx(selectedIndicators).join(';');
-<<<<<<< HEAD
-
-  document.getElementById('explorerChartWrap').innerHTML = '<div class="chart-loading"><div class="spinner"></div>Fetching data…</div>';
-  document.getElementById('explorerChart').style.display = 'none';
-
-  try {
-    const data = await apiFetch(`/api/analytics?dx=${encodeURIComponent(dxIds)}&ou=${encodeURIComponent(ou)}&pe=${encodeURIComponent(pe)}`);
-    renderExplorerChartFromAnalytics(data);
-=======
   const selectedOrgUnits = getSelectedValues('ouSelect');
   const selectedPeriods = getSelectedPeriods();
   const multiplePeriods = selectedPeriods.length > 1;
@@ -2188,7 +2016,6 @@ async function loadExplorerChart() {
   try {
     const data = await apiFetch(`${endpoint}?dx=${encodeURIComponent(dxIds)}&ou=${encodeURIComponent(ou)}&pe=${encodeURIComponent(pe)}`);
     renderExplorerChartFromAnalytics(data, { compareByOrgUnit, multiplePeriods, xAxisMode });
->>>>>>> eb49461 (updated files)
   } catch(e) {
     setChartMessage('explorerChartWrap', 'explorerChart', 'Unable to load explorer data from DHIS2');
   }
@@ -2324,34 +2151,14 @@ async function renderTrendChart(canvasId, wrapId, indicators, ou, pe, options={}
   }
 }
 
-<<<<<<< HEAD
-function renderExplorerChartFromAnalytics(data) {
-  const parsed = parseAnalytics(data);
-=======
 function renderExplorerChartFromAnalytics(data, options={}) {
   const { compareByOrgUnit=false, multiplePeriods=false, xAxisMode='auto' } = options;
   const parsed = compareByOrgUnit ? parseAnalyticsByOU(data) : parseAnalytics(data);
->>>>>>> eb49461 (updated files)
   if (!parsed.labels.length) {
     setChartMessage('explorerChartWrap', 'explorerChart', 'No DHIS2 data returned for the selected indicators');
     return;
   }
 
-<<<<<<< HEAD
-  destroyChart('explorer');
-  document.getElementById('explorerChartWrap').style.display = 'none';
-  document.getElementById('explorerChart').style.display = 'block';
-
-  const cfg = chartDefaults();
-  cfg.plugins.legend.position = 'top';
-  cfg.plugins.datalabels = { display: false };
-
-  charts.explorer = new Chart(document.getElementById('explorerChart'), {
-    type: 'line',
-    data: parsed,
-    options: { ...cfg, interaction:{ mode:'index', intersect:false } }
-  });
-=======
   parsed.datasets = parsed.datasets.map((dataset, index) => ({
     ...dataset,
     label: getExplorerSeriesLabel(dataset.label),
@@ -2371,19 +2178,14 @@ function renderExplorerChartFromAnalytics(data, options={}) {
   }
 
   renderLineChart('explorerChart', 'explorerChartWrap', parsed.labels, parsed.datasets, false);
->>>>>>> eb49461 (updated files)
 }
 
 // ── KPI rendering ─────────────────────────────────────────────────────────────
 
 function renderKPIs(containerId, kpis, color) {
-<<<<<<< HEAD
-  document.getElementById(containerId).innerHTML = kpis.map((k, i) =>
-=======
   const container = document.getElementById(containerId);
   if (!container) return;
   container.innerHTML = kpis.map((k, i) =>
->>>>>>> eb49461 (updated files)
     `<div class="kpi-card kpi-c${(i%4)+1}">
       <div class="kpi-label">${k.label}</div>
       <div class="kpi-value">${fmt(k.value)}</div>
@@ -2393,13 +2195,9 @@ function renderKPIs(containerId, kpis, color) {
 }
 
 function renderSkeletonKPIs(id, n=4) {
-<<<<<<< HEAD
-  document.getElementById(id).innerHTML = Array(n).fill(0).map((_,i)=>
-=======
   const container = document.getElementById(id);
   if (!container) return;
   container.innerHTML = Array(n).fill(0).map((_,i)=>
->>>>>>> eb49461 (updated files)
     `<div class="kpi-card kpi-c${(i%4)+1}">
       <div class="kpi-label skeleton" style="width:60%;height:10px;margin-bottom:10px;"></div>
       <div class="skeleton" style="width:50%;height:24px;"></div>
@@ -2410,13 +2208,10 @@ function renderSkeletonKPIs(id, n=4) {
 // ── Chart helpers ─────────────────────────────────────────────────────────────
 
 function renderBarChart(canvasId, wrapId, labels, datasets, extra={}) {
-<<<<<<< HEAD
-=======
   if (!chartingAvailable) {
     setChartMessage(wrapId, canvasId, 'Chart unavailable: Chart.js failed to load');
     return;
   }
->>>>>>> eb49461 (updated files)
   destroyChart(canvasId);
   showCanvas(canvasId, wrapId);
 
@@ -2460,11 +2255,6 @@ function renderBarChart(canvasId, wrapId, labels, datasets, extra={}) {
     data: { labels, datasets },
     options: opts,
   });
-<<<<<<< HEAD
-}
-
-function renderLineChart(canvasId, wrapId, labels, datasets, dualAxis=false) {
-=======
   syncChartToolbarState(canvasId);
 }
 
@@ -2473,7 +2263,6 @@ function renderLineChart(canvasId, wrapId, labels, datasets, dualAxis=false) {
     setChartMessage(wrapId, canvasId, 'Chart unavailable: Chart.js failed to load');
     return;
   }
->>>>>>> eb49461 (updated files)
   destroyChart(canvasId);
   showCanvas(canvasId, wrapId);
 
@@ -2491,10 +2280,7 @@ function renderLineChart(canvasId, wrapId, labels, datasets, dualAxis=false) {
     data: { labels, datasets },
     options: { ...opts, interaction:{ mode:'index', intersect:false } },
   });
-<<<<<<< HEAD
-=======
   syncChartToolbarState(canvasId);
->>>>>>> eb49461 (updated files)
 }
 
 // ── Live data loading from DHIS2 ──────────────────────────────────────────────
@@ -2679,36 +2465,6 @@ async function loadLiveData() {
   );
 
   await renderTrendChart(
-<<<<<<< HEAD
-    'actChart',
-    'actChartWrap',
-    findIndicatorsByNames([
-      '% of confirmed uncomplicated malaria given ACT',
-      '% of confirmed uncomplicated malaria given other antimalaria'
-    ]),
-    ou,
-    pe,
-    { type: 'line', errorMessage: 'Unable to load treatment outcome percentage indicators from DHIS2' }
-  );
-
-  await renderTrendChart(
-    'severeChart',
-    'severeChartWrap',
-    findIndicatorsByNames([
-      'Persons Clinically diagnosed with Malaria treated with ACT <5yrs',
-      'Persons Clinically diagnosed with Malaria treated with ACT >=5yrs (excl PW)',
-      'Persons Clinically diagnosed with Malaria treated with ACT PW',
-      'Confirmed Uncomplicated treated with ACT <5yrs',
-      'Confirmed Uncomplicated treated with ACT >=5yrs (excl PW)',
-      'Confirmed Uncomplicated treated with ACT PW',
-      'Treated with other antimalarials <5yrs',
-      'Treated with other antimalarials >=5yrs (excl PW)',
-      'Treated with other antimalarials PW'
-    ]),
-    ou,
-    pe,
-    { type: 'bar', errorMessage: 'Unable to load malaria treatment volume indicators from DHIS2' }
-=======
     'actOutcomeChart',
     'actOutcomeChartWrap',
     findIndicatorsByNames(['% of confirmed uncomplicated malaria given ACT']),
@@ -2805,7 +2561,6 @@ async function loadLiveData() {
     ou,
     pe,
     { type: 'bar', errorMessage: 'Unable to load other antimalarial PW indicator from DHIS2' }
->>>>>>> eb49461 (updated files)
   );
 
   await renderTrendChart(
@@ -2829,14 +2584,11 @@ async function refreshAll() {
   const online = await checkHealth();
   if (online) {
     await loadLiveData();
-<<<<<<< HEAD
-=======
     if (selectedIndicators.length) {
       await loadExplorerChart();
     } else {
       clearExplorerChart();
     }
->>>>>>> eb49461 (updated files)
   } else {
     renderUnavailableState('DHIS2 sync unavailable');
   }
@@ -2847,8 +2599,6 @@ async function refreshAll() {
 async function init() {
   setStatus('loading','Initializing…');
   document.getElementById('copyrightYear').textContent = String(new Date().getFullYear());
-<<<<<<< HEAD
-=======
   initializeTheme();
   enhanceChartCards();
   if (!chartingAvailable) {
@@ -2857,7 +2607,6 @@ async function init() {
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape') closeChartPreview();
   });
->>>>>>> eb49461 (updated files)
 
   // Load skeleton KPIs while connecting
   ['Prevention','Diagnosis','Treatment','Impact'].forEach(c => renderSkeletonKPIs('kpi'+c, 4));
