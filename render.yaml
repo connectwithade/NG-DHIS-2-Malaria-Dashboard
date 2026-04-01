@@ -1,10 +1,10 @@
 services:
   - type: web
-    name: dhis2-malaria-dashboard
+    name: ng-dhis2-malaria-dashboard
     runtime: python
-    plan: starter
+    plan: free
     buildCommand: pip install -r requirements.txt
-    startCommand: gunicorn app:app
+    startCommand: gunicorn --bind 0.0.0.0:$PORT app:app
     autoDeploy: true
     envVars:
       - key: DHIS2_BASE
