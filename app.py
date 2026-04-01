@@ -21,8 +21,13 @@ app = Flask(__name__, static_folder="static")
 CORS(app)
 
 DHIS2_BASE = os.getenv("DHIS2_BASE", "https://dhis2nigeria.org.ng/dhis").rstrip("/")
+<<<<<<< HEAD
 DHIS2_USER = os.getenv("DHIS2_USER", "").strip()
 DHIS2_PASS = os.getenv("DHIS2_PASS", "").strip()
+=======
+DHIS2_USER = os.getenv("DHIS2_USER", "Adedamola_Akinola")
+DHIS2_PASS = os.getenv("DHIS2_PASS", "#Crownstar2")
+>>>>>>> eb49461 (updated files)
 REQUEST_TIMEOUT = int(os.getenv("DHIS2_TIMEOUT", "30"))
 
 session = requests.Session()
@@ -355,6 +360,46 @@ def sample_sync_uids(limit: int = 6):
     return available[:limit]
 
 
+<<<<<<< HEAD
+=======
+def probe_dhis2_connection():
+    """
+    Confirm DHIS2 connectivity using lightweight endpoints first.
+    `/api/system/info` can be slow on some installations, so we only use it
+    as enrichment after a successful basic probe.
+    """
+    try:
+        me = dhis2_get("/api/me", {
+            "fields": "id,username",
+        })
+        probe = {
+            "probe": "me",
+            "user": {
+                "id": me.get("id"),
+                "username": me.get("username"),
+            },
+        }
+    except RuntimeError:
+        system = dhis2_get("/api/system/info")
+        probe = {
+            "probe": "system-info",
+            "version": system.get("version"),
+            "systemName": system.get("systemName"),
+        }
+        return system, probe
+
+    try:
+        system = dhis2_get("/api/system/info")
+        system["probe"] = probe
+        return system, probe
+    except RuntimeError:
+        return {
+            "partial": True,
+            "probe": probe,
+        }, probe
+
+
+>>>>>>> eb49461 (updated files)
 def run_sync(validation_mode: str = "sample"):
     state = load_sync_state()
     state["status"] = "syncing"
@@ -365,7 +410,11 @@ def run_sync(validation_mode: str = "sample"):
     save_sync_state(state)
 
     try:
+<<<<<<< HEAD
         info = dhis2_get("/api/system/info")
+=======
+        info, probe = probe_dhis2_connection()
+>>>>>>> eb49461 (updated files)
         state["dhis2_info"] = info
         state["status"] = "connected"
     except RuntimeError as exc:
@@ -392,6 +441,12 @@ def run_sync(validation_mode: str = "sample"):
 
     state["validated_uids"] = validated
     state["last_success_at"] = utc_now_iso()
+<<<<<<< HEAD
+=======
+    if state.get("dhis2_info", {}).get("partial"):
+        state["status"] = "degraded"
+        state["last_error"] = "Connected to DHIS2, but /api/system/info timed out"
+>>>>>>> eb49461 (updated files)
     if state["status"] == "connected" and any(not item["ok"] for item in validated):
         state["status"] = "degraded"
         state["last_error"] = "One or more validation queries failed"
@@ -408,8 +463,11 @@ def sync_response_payload():
 
 def dhis2_get(path: str, params: dict = None):
     """Make an authenticated GET request to DHIS2 with caching."""
+<<<<<<< HEAD
     if not DHIS2_USER or not DHIS2_PASS:
         raise RuntimeError("DHIS2 credentials are not configured. Set DHIS2_USER and DHIS2_PASS in Render environment variables.")
+=======
+>>>>>>> eb49461 (updated files)
     cache_key = path + json.dumps(params or {}, sort_keys=True)
     now = time.time()
     if cache_key in _cache and (now - _cache[cache_key]["ts"]) < CACHE_TTL:
@@ -688,9 +746,15 @@ def sync_run():
 
 @app.route("/api/health")
 def health():
+<<<<<<< HEAD
     state = sync_response_payload()
     payload = {
         "status": "ok" if state["status"] in {"connected", "degraded"} else state["status"],
+=======
+    state = load_sync_state()
+    payload = {
+        "status": "ok",
+>>>>>>> eb49461 (updated files)
         "sync_status": state["status"],
         "dhis2_base": state["dhis2_base"],
         "catalog_count": state["catalog_count"],
@@ -703,8 +767,12 @@ def health():
     }
     if state.get("last_error"):
         payload["error"] = state["last_error"]
+<<<<<<< HEAD
     status_code = 200 if state["status"] in {"connected", "degraded"} else 503
     return jsonify(payload), status_code
+=======
+    return jsonify(payload), 200
+>>>>>>> eb49461 (updated files)
 
 
 @app.route("/api/cache/clear", methods=["POST"])
@@ -716,6 +784,10 @@ def clear_cache():
 # ── Serve frontend ─────────────────────────────────────────────────────────────
 
 @app.route("/")
+<<<<<<< HEAD
+=======
+@app.route("/dhis2mal")
+>>>>>>> eb49461 (updated files)
 def index():
     return send_from_directory("static", "index.html")
 
