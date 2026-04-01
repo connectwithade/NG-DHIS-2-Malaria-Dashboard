@@ -47,6 +47,8 @@ session.headers.update({"Accept": "application/json", "User-Agent": "dhis2-malar
 # Simple in-memory cache (key → {data, ts})
 _cache: dict = {}
 CACHE_TTL = 3600  # 1 hour
+CACHE_MAX_ENTRIES = int(os.getenv("CACHE_MAX_ENTRIES", "32"))
+CACHE_MAX_PAYLOAD_BYTES = int(os.getenv("CACHE_MAX_PAYLOAD_BYTES", "500000"))
 LINKAGE_FILE = os.path.join(os.path.dirname(__file__), "malaria_indicator_linkage_live.csv")
 SYNC_STATE_FILE = os.path.join(os.path.dirname(__file__), "dhis2_sync_state.json")
 VERIFIED_ORG_UNIT_LEVELS = [
@@ -461,6 +463,19 @@ def sync_response_payload():
     return state
 
 
+def prune_cache(now: float):
+    expired_keys = [
+        key for key, value in _cache.items()
+        if (now - value["ts"]) >= CACHE_TTL
+    ]
+    for key in expired_keys:
+        _cache.pop(key, None)
+
+    while len(_cache) >= CACHE_MAX_ENTRIES:
+        oldest_key = min(_cache.items(), key=lambda item: item[1]["ts"])[0]
+        _cache.pop(oldest_key, None)
+
+
 def dhis2_get(path: str, params: dict = None):
     """Make an authenticated GET request to DHIS2 with caching."""
 <<<<<<< HEAD
@@ -470,6 +485,7 @@ def dhis2_get(path: str, params: dict = None):
 >>>>>>> eb49461 (updated files)
     cache_key = path + json.dumps(params or {}, sort_keys=True)
     now = time.time()
+    prune_cache(now)
     if cache_key in _cache and (now - _cache[cache_key]["ts"]) < CACHE_TTL:
         return _cache[cache_key]["data"]
 
@@ -486,7 +502,13 @@ def dhis2_get(path: str, params: dict = None):
         raise RuntimeError(f"DHIS2 request failed for {path}: {exc}") from exc
 
     data = resp.json()
-    _cache[cache_key] = {"data": data, "ts": now}
+    try:
+        payload_bytes = len(json.dumps(data))
+    except (TypeError, ValueError):
+        payload_bytes = CACHE_MAX_PAYLOAD_BYTES + 1
+
+    if payload_bytes <= CACHE_MAX_PAYLOAD_BYTES:
+        _cache[cache_key] = {"data": data, "ts": now}
     return data
 
 
