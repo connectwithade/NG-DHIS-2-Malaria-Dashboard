@@ -787,7 +787,11 @@ def clear_cache():
 <<<<<<< HEAD
 =======
 @app.route("/dhis2mal")
+<<<<<<< HEAD
 >>>>>>> eb49461 (updated files)
+=======
+@app.route("/dhis2mal/")
+>>>>>>> 5ff4c9b (Update app.py)
 def index():
     return send_from_directory("static", "index.html")
 
