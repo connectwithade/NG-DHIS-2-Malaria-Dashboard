@@ -6,6 +6,9 @@
 <title>Nigeria Malaria Dashboard — DHIS2 Live</title>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.2.0/dist/chartjs-plugin-datalabels.min.js"></script>
+<!-- Leaflet for Maps -->
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
 <style>
 :root {
   --bg: #0e1117;
@@ -484,6 +487,70 @@ body[data-theme="light"] .ou-unit-item.is-selected {
   background: var(--surface); border: 1px solid rgba(17,141,255,0.3);
   border-radius: var(--radius); padding: 16px;
   box-shadow: 0 0 0 1px rgba(17,141,255,0.08);
+}
+.explorer-maps-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+  gap: 20px;
+  margin-top: 24px;
+}
+.explorer-map-card {
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.explorer-map-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  background: rgba(255,255,255,0.03);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+.explorer-map-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--text);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+.explorer-map-container {
+  height: 400px;
+  width: 100%;
+  background: #111;
+}
+.map-legend {
+  padding: 10px 16px;
+  background: rgba(0,0,0,0.2);
+  font-size: 10px;
+  color: var(--text-muted);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  border-top: 1px solid var(--border);
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+.legend-color {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+}
+.leaflet-container {
+  background: #111 !important;
+  font-family: inherit !important;
+}
+.leaflet-popup-content-wrapper, .leaflet-popup-tip {
+  background: var(--surface2) !important;
+  color: var(--text) !important;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow) !important;
 }
 .explorer-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
 .explorer-title { font-size: 14px; font-weight: 700; color: var(--text); }
@@ -1098,6 +1165,7 @@ body[data-theme="light"] .offline-notice {
     </div>
     <div id="explorerChartWrap"><div class="chart-loading" style="height:160px;">Select indicators from the sidebar →</div></div>
     <canvas id="explorerChart" style="display:none;max-height:320px;"></canvas>
+    <div id="explorerMaps" class="explorer-maps-grid"></div>
   </div>
 
 </main>
@@ -1990,11 +2058,156 @@ function clearExplorerChart() {
   document.getElementById('explorerChartWrap').style.display = 'flex';
   document.getElementById('explorerChart').style.display = 'none';
   document.getElementById('explorerChips').innerHTML = '<span class="chip-empty">No indicators selected</span>';
+  clearExplorerMaps();
 }
 
 function getExplorerSeriesLabel(dxId) {
   const selected = selectedIndicators.find(item => (item.dx || item.id) === dxId);
   return selected?.short || selected?.name || dxId;
+}
+
+let explorerMaps = [];
+
+function clearExplorerMaps() {
+  explorerMaps.forEach(m => m.remove());
+  explorerMaps = [];
+  const container = document.getElementById('explorerMaps');
+  if (container) container.innerHTML = '';
+}
+
+async function loadExplorerMaps(analyticsData) {
+  clearExplorerMaps();
+  if (!selectedIndicators.length || !analyticsData || !analyticsData.rows) return;
+
+  const level = document.getElementById('ouLevel').value || '1';
+  const parentScope = getNearestParentSelections(level);
+  const parent = parentScope?.ids?.[0];
+  
+  // Fetch GeoJSON
+  let geoData = null;
+  try {
+    const geoQuery = new URLSearchParams({ level: String(level) });
+    if (parent) geoQuery.set('parent', parent);
+    geoData = await apiFetch(`/api/geo?${geoQuery.toString()}`);
+  } catch(e) {
+    console.error('GeoJSON fetch failed', e);
+    return;
+  }
+
+  if (!geoData || (!geoData.features && !geoData.organisationUnits)) return;
+
+  // Handle both GeoJSON and DHIS2 JSON results
+  const features = geoData.features || (geoData.organisationUnits || []).map(ou => ({
+    type: 'Feature',
+    id: ou.id,
+    geometry: ou.geometry,
+    properties: { id: ou.id, name: ou.displayName }
+  })).filter(f => f.geometry);
+
+  const container = document.getElementById('explorerMaps');
+  
+  selectedIndicators.forEach((ind, idx) => {
+    const mapCard = document.createElement('div');
+    mapCard.className = 'explorer-map-card';
+    const mapId = `map-${idx}-${Date.now()}`;
+    
+    mapCard.innerHTML = `
+      <div class="explorer-map-header">
+        <div class="explorer-map-title">${ind.name}</div>
+      </div>
+      <div id="${mapId}" class="explorer-map-container"></div>
+      <div id="${mapId}-legend" class="map-legend"></div>
+    `;
+    container.appendChild(mapCard);
+    
+    setTimeout(() => renderChoropleth(mapId, features, analyticsData, ind.dx), 10);
+  });
+}
+
+function renderChoropleth(mapId, features, analyticsData, dxId) {
+  const map = L.map(mapId, {
+    attributionControl: false,
+    zoomControl: true,
+    scrollWheelZoom: false
+  }).setView([9.082, 8.675], 6);
+  
+  explorerMaps.push(map);
+
+  // In dark mode, use a dark tile layer or just the polygons
+  const isDark = document.body.dataset.theme === 'dark';
+  if (!isDark) {
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+  }
+
+  const dataMap = {};
+  let vals = [];
+  
+  const headers = (analyticsData.headers || []).map(h => h.name);
+  const dxIdx = headers.indexOf('dx');
+  const ouIdx = headers.indexOf('ou');
+  const valIdx = headers.indexOf('value');
+
+  analyticsData.rows.forEach(r => {
+    if (r[dxIdx] === dxId) {
+      const val = parseFloat(r[valIdx]);
+      dataMap[r[ouIdx]] = val;
+      vals.push(val);
+    }
+  });
+
+  const min = vals.length ? Math.min(...vals) : 0;
+  const max = vals.length ? Math.max(...vals) : 100;
+
+  function style(feature) {
+    const val = dataMap[feature.id] || 0;
+    return {
+      fillColor: getColor(val, min, max),
+      weight: 1,
+      opacity: 1,
+      color: isDark ? '#2a3347' : '#fff',
+      fillOpacity: 0.8
+    };
+  }
+
+  const geoLayer = L.geoJson({ type: 'FeatureCollection', features }, {
+    style: style,
+    onEachFeature: (feature, layer) => {
+      const val = dataMap[feature.id];
+      layer.bindPopup(`<strong>${feature.properties.name}</strong><br/>${indNameByDx(dxId)}: ${val != null ? fmt(val) : 'No data'}`);
+      layer.on('mouseover', function() {
+        this.setStyle({ weight: 2, color: '#118DFF', fillOpacity: 1 });
+      });
+      layer.on('mouseout', function() {
+        geoLayer.resetStyle(this);
+      });
+    }
+  }).addTo(map);
+
+  if (features.length) {
+    map.fitBounds(geoLayer.getBounds(), { padding: [20, 20] });
+  }
+
+  // Legend
+  const legend = document.getElementById(`${mapId}-legend`);
+  if (legend) {
+    const steps = 5;
+    for (let i = 0; i < steps; i++) {
+        const v = min + (i * (max - min) / (steps - 1));
+        const color = getColor(v, min, max);
+        legend.innerHTML += `<div class="legend-item"><div class="legend-color" style="background:${color}"></div><span>${fmt(v)}</span></div>`;
+    }
+  }
+}
+
+function getColor(v, min, max) {
+  if (max === min) return '#118DFF';
+  const p = (v - min) / (max - min);
+  // Using a nice blue-to-teal-to-orange scale
+  if (p < 0.2) return '#eff6ff';
+  if (p < 0.4) return '#93c5fd';
+  if (p < 0.6) return '#3b82f6';
+  if (p < 0.8) return '#1d4ed8';
+  return '#1e3a8a';
 }
 
 async function loadExplorerChart() {
@@ -2016,8 +2229,11 @@ async function loadExplorerChart() {
   try {
     const data = await apiFetch(`${endpoint}?dx=${encodeURIComponent(dxIds)}&ou=${encodeURIComponent(ou)}&pe=${encodeURIComponent(pe)}`);
     renderExplorerChartFromAnalytics(data, { compareByOrgUnit, multiplePeriods, xAxisMode });
+    // Also load maps
+    loadExplorerMaps(data);
   } catch(e) {
     setChartMessage('explorerChartWrap', 'explorerChart', 'Unable to load explorer data from DHIS2');
+    clearExplorerMaps();
   }
 }
 

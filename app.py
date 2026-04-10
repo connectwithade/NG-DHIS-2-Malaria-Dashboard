@@ -661,6 +661,36 @@ def periods():
     return jsonify(build_period_options(server_date))
 
 
+@app.route("/api/geo")
+def geo():
+    """
+    Fetch GeoJSON boundary data for organization units.
+    Query params: level, parent
+    """
+    level = request.args.get("level")
+    parent = request.args.get("parent")
+    try:
+        params = {
+            "paging": "false",
+        }
+        if level:
+            params["level"] = level
+        if parent:
+            params["parent"] = parent
+        
+        # Priority 1: Try organisationUnits.geojson endpoint
+        try:
+            data = dhis2_get("/api/organisationUnits.geojson", params)
+            return jsonify(data)
+        except Exception:
+            # Priority 2: Fallback to .json with geometry field
+            params["fields"] = "id,displayName,geometry"
+            data = dhis2_get("/api/organisationUnits.json", params)
+            return jsonify(data)
+    except Exception as exc:
+        return json_error(str(exc), 500)
+
+
 # ── Analytics endpoints ────────────────────────────────────────────────────────
 
 @app.route("/api/analytics")
