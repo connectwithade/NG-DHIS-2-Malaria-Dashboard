@@ -665,10 +665,11 @@ def periods():
 def geo():
     """
     Fetch GeoJSON boundary data for organization units.
-    Query params: level, parent
+    Query params: level, parent, group
     """
     level = request.args.get("level")
     parent = request.args.get("parent")
+    group = request.args.get("group")
     try:
         params = {
             "paging": "false",
@@ -680,11 +681,16 @@ def geo():
         
         # Priority 1: Try organisationUnits.geojson endpoint
         try:
-            data = dhis2_get("/api/organisationUnits.geojson", params)
+            geo_params = params.copy()
+            if group:
+                geo_params["filter"] = f"organisationUnitGroups.id:eq:{group}"
+            data = dhis2_get("/api/organisationUnits.geojson", geo_params)
             return jsonify(data)
         except Exception:
             # Priority 2: Fallback to .json with geometry field
             params["fields"] = "id,displayName,geometry"
+            if group:
+                params["filter"] = f"organisationUnitGroups.id:eq:{group}"
             data = dhis2_get("/api/organisationUnits.json", params)
             return jsonify(data)
     except Exception as exc:

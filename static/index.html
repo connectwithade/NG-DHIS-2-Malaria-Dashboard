@@ -1406,7 +1406,7 @@ async function loadOrgUnitsForLevel(level) {
     query.set('parents', parentScope.ids.join(','));
     query.set('descendants', 'true');
   }
-  if (group && String(level) === '5') {
+  if (group) {
     query.set('group', group);
   }
 
@@ -2086,8 +2086,10 @@ async function loadExplorerMaps(analyticsData) {
   // Fetch GeoJSON
   let geoData = null;
   try {
+    const group = document.getElementById('ouGroup')?.value;
     const geoQuery = new URLSearchParams({ level: String(level) });
     if (parent) geoQuery.set('parent', parent);
+    if (group) geoQuery.set('group', group);
     geoData = await apiFetch(`/api/geo?${geoQuery.toString()}`);
   } catch(e) {
     console.error('GeoJSON fetch failed', e);
