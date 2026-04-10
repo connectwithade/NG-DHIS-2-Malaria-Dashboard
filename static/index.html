@@ -1309,18 +1309,25 @@ function normalizeOrgUnitLabel(name) {
 
 function normalizeForJoin(name) {
   if (!name) return '';
-  // Convert to lowercase, remove common prefixes/suffixes, and handle common spelling variants
+  // Mirror legacy NG dashboard normalization as closely as possible.
   let n = name.toLowerCase()
-    .replace(/^ng\s+/i, '')
+    .replace(/^[a-z]{2}\s+/i, '')                 // strip two-letter prefixes (e.g., NG Abia)
+    .replace(/^[a-z]{2}(?=[\s\W])/i, '')          // strip two-letter prefixes before punctuation
+    .replace(/\blocal government area\b/gi, '')
+    .replace(/\blocal government\b/gi, '')
+    .replace(/\bmunicipal area council\b/gi, 'municipal')
+    .replace(/\barea council\b/gi, '')
     .replace(/\s+state$/i, '')
     .replace(/\s+lga$/i, '')
+    .replace(/\s*\/\s*/g, '/')
+    .replace(/\s*-\s*/g, '-')
     .replace(/[^a-z0-9]/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
   
   // Specific fixes
   if (n === 'akwa lbom') n = 'akwa ibom'; // Fix for common l/I confusion
-  if (n === 'fct') n = 'federal capital territory';
+  if (n === 'federal capital territory') n = 'fct';
   return n;
 }
 
