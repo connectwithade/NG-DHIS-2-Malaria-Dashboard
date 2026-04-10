@@ -2127,18 +2127,27 @@ async function loadExplorerMaps(analyticsData) {
 }
 
 function renderChoropleth(mapId, features, analyticsData, dxId) {
+  const container = document.getElementById(mapId);
+  if (!container) return;
+
   const map = L.map(mapId, {
     attributionControl: false,
     zoomControl: true,
-    scrollWheelZoom: false
+    scrollWheelZoom: false,
+    fadeAnimation: false
   }).setView([9.082, 8.675], 6);
   
   explorerMaps.push(map);
 
-  // In dark mode, use a dark tile layer or just the polygons
   const isDark = document.body.dataset.theme === 'dark';
-  if (!isDark) {
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png').addTo(map);
+  if (isDark) {
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+      maxZoom: 19
+    }).addTo(map);
+  } else {
+    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+      maxZoom: 19
+    }).addTo(map);
   }
 
   const dataMap = {};
@@ -2175,9 +2184,10 @@ function renderChoropleth(mapId, features, analyticsData, dxId) {
     style: style,
     onEachFeature: (feature, layer) => {
       const val = dataMap[feature.id];
-      layer.bindPopup(`<strong>${feature.properties.name}</strong><br/>${indNameByDx(dxId)}: ${val != null ? fmt(val) : 'No data'}`);
+      const indName = selectedIndicators.find(i => i.dx === dxId)?.name || 'Indicator';
+      layer.bindPopup(`<strong>${feature.properties.name}</strong><br/>${indName}: ${val != null ? fmt(val) : 'No data'}`);
       layer.on('mouseover', function() {
-        this.setStyle({ weight: 2, color: '#118DFF', fillOpacity: 1 });
+        this.setStyle({ weight: 2, color: '#118DFF', fillOpacity: 0.9 });
       });
       layer.on('mouseout', function() {
         geoLayer.resetStyle(this);
@@ -2192,6 +2202,7 @@ function renderChoropleth(mapId, features, analyticsData, dxId) {
   // Legend
   const legend = document.getElementById(`${mapId}-legend`);
   if (legend) {
+    legend.innerHTML = ''; // Clear previous
     const steps = 5;
     for (let i = 0; i < steps; i++) {
         const v = min + (i * (max - min) / (steps - 1));
@@ -2199,6 +2210,9 @@ function renderChoropleth(mapId, features, analyticsData, dxId) {
         legend.innerHTML += `<div class="legend-item"><div class="legend-color" style="background:${color}"></div><span>${fmt(v)}</span></div>`;
     }
   }
+
+  // Ensure map is correctly sized after initialization
+  setTimeout(() => map.invalidateSize(), 150);
 }
 
 function getColor(v, min, max) {
@@ -2371,7 +2385,12 @@ async function renderTrendChart(canvasId, wrapId, indicators, ou, pe, options={}
 
 function renderExplorerChartFromAnalytics(data, options={}) {
   const { compareByOrgUnit=false, multiplePeriods=false, xAxisMode='auto' } = options;
-  const parsed = compareByOrgUnit ? parseAnalyticsByOU(data) : parseAnalytics(data);
+  const forceOrgAxis = xAxisMode === 'org';
+  const forcePeriodAxis = xAxisMode === 'period';
+  
+  // Decide how to parse based on axis mode
+  const parsed = (forceOrgAxis || compareByOrgUnit) ? parseAnalyticsByOU(data) : parseAnalytics(data);
+  
   if (!parsed.labels.length) {
     setChartMessage('explorerChartWrap', 'explorerChart', 'No DHIS2 data returned for the selected indicators');
     return;
@@ -2386,16 +2405,18 @@ function renderExplorerChartFromAnalytics(data, options={}) {
     tension: 0.35,
     pointRadius: 3,
     borderWidth: 2,
-    borderRadius: compareByOrgUnit ? 5 : undefined,
+    borderRadius: (forceOrgAxis || compareByOrgUnit) ? 5 : undefined,
   }));
 
-  if (compareByOrgUnit || (xAxisMode === 'auto' && !multiplePeriods)) {
+  if (forceOrgAxis || compareByOrgUnit) {
     const barOptions = parsed.labels.length > 6 ? { indexAxis: 'y' } : {};
     renderBarChart('explorerChart', 'explorerChartWrap', parsed.labels, parsed.datasets, barOptions);
-    return;
+  } else if (forcePeriodAxis || multiplePeriods) {
+    renderLineChart('explorerChart', 'explorerChartWrap', parsed.labels, parsed.datasets, false);
+  } else {
+    // Default fallback
+    renderLineChart('explorerChart', 'explorerChartWrap', parsed.labels, parsed.datasets, false);
   }
-
-  renderLineChart('explorerChart', 'explorerChartWrap', parsed.labels, parsed.datasets, false);
 }
 
 // ── KPI rendering ─────────────────────────────────────────────────────────────
