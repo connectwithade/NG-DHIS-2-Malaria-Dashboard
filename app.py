@@ -726,6 +726,8 @@ def analytics():
             "outputIdScheme": "UID",
             "skipMeta": "false",
             "skipData": "false",
+            "includeMetadataDetails": "true",
+            "hideEmptyRows": "true"
         })
     except RuntimeError as exc:
         return json_error(str(exc), requested_dx=unique_dx, ou=ou, pe=pe)
@@ -749,6 +751,8 @@ def analytics_aggregate():
             "filter": f"ou:{ou}",
             "displayProperty": "NAME",
             "outputIdScheme": "UID",
+            "skipMeta": "false",
+            "includeMetadataDetails": "true"
         })
     except RuntimeError as exc:
         return json_error(str(exc), requested_dx=unique_dx, ou=ou, pe=pe)

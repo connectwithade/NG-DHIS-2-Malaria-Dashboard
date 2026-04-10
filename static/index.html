@@ -2194,9 +2194,9 @@ function renderChoropleth(mapId, features, analyticsData, dxId) {
   let vals = [];
   
   const headers = (analyticsData.headers || []).map(h => h.name);
-  const dxIdx = headers.indexOf('dx');
-  const ouIdx = headers.indexOf('ou');
-  const valIdx = headers.indexOf('value');
+  const dxIdx = getColumnIndex(headers, ['dx', 'indicator']);
+  const ouIdx = getColumnIndex(headers, ['ou', 'organisationunit']);
+  const valIdx = getColumnIndex(headers, ['value', 'val']);
   const items = analyticsData.metaData?.items || {};
 
   analyticsData.rows.forEach(r => {
@@ -2328,23 +2328,31 @@ async function loadExplorerChart() {
   }
 }
 
+function getColumnIndex(headers, aliases) {
+  const h = (headers || []).map(item => String(item).toLowerCase());
+  const a = aliases.map(item => String(item).toLowerCase());
+  return h.findIndex(header => a.includes(header));
+}
+
 function parseAnalytics(data) {
   if (!data || !data.rows) return { labels:[], datasets:[] };
   const meta = data.metaData || {};
   const headers = (data.headers || []).map(h => h.name);
-  const dxIdx = headers.indexOf('dx');
-  const peIdx = headers.indexOf('pe');
-  const ouIdx = headers.indexOf('ou');
-  const valIdx = headers.indexOf('value');
+  
+  const dxIdx = getColumnIndex(headers, ['dx', 'indicator', 'data']);
+  const peIdx = getColumnIndex(headers, ['pe', 'period']);
+  const ouIdx = getColumnIndex(headers, ['ou', 'organisationunit', 'unit']);
+  const valIdx = getColumnIndex(headers, ['value', 'val']);
 
-  const periods = [...new Set(data.rows.map(r => r[peIdx]))];
-  const dxIds   = [...new Set(data.rows.map(r => r[dxIdx]))];
+  const rows = data.rows || [];
+  const periods = [...new Set(rows.map(r => r[peIdx]))];
+  const dxIds   = [...new Set(rows.map(r => r[dxIdx]))];
 
   const periodLabels = periods.map(p => (meta.items?.[p]?.name || p));
   const datasets = dxIds.map((dxId, i) => ({
     label: meta.items?.[dxId]?.name || dxId,
     data: periods.map(p => {
-      const row = data.rows.find(r => r[dxIdx]===dxId && r[peIdx]===p);
+      const row = rows.find(r => r[dxIdx]===dxId && r[peIdx]===p);
       return row ? parseFloat(row[valIdx]) : 0;
     }),
     borderColor: CHART_COLORS[i % CHART_COLORS.length],
@@ -2359,19 +2367,21 @@ function parseAnalyticsByOU(data) {
   if (!data || !data.rows) return { labels:[], datasets:[] };
   const meta = data.metaData || {};
   const headers = (data.headers || []).map(h => h.name);
-  const dxIdx = headers.indexOf('dx');
-  const peIdx = headers.indexOf('pe');
-  const ouIdx = headers.indexOf('ou');
-  const valIdx = headers.indexOf('value');
+  
+  const dxIdx = getColumnIndex(headers, ['dx', 'indicator', 'data']);
+  const peIdx = getColumnIndex(headers, ['pe', 'period']);
+  const ouIdx = getColumnIndex(headers, ['ou', 'organisationunit', 'unit']);
+  const valIdx = getColumnIndex(headers, ['value', 'val']);
 
-  const ouIds = [...new Set(data.rows.map(r => r[ouIdx]))];
-  const dxIds = [...new Set(data.rows.map(r => r[dxIdx]))];
+  const rows = data.rows || [];
+  const ouIds = [...new Set(rows.map(r => r[ouIdx]))];
+  const dxIds = [...new Set(rows.map(r => r[dxIdx]))];
 
   const labels = ouIds.map(ouId => normalizeOrgUnitLabel(meta.items?.[ouId]?.name || ouId));
   const datasets = dxIds.map((dxId, index) => ({
     label: meta.items?.[dxId]?.name || dxId,
     data: ouIds.map(ouId =>
-      data.rows
+      rows
         .filter(r => r[dxIdx] === dxId && r[ouIdx] === ouId)
         .reduce((sum, row) => sum + (parseFloat(row[valIdx]) || 0), 0)
     ),
