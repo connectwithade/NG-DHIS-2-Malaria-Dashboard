@@ -1798,11 +1798,12 @@ async function loadPeriods() {
   });
 
   const defaultMonth = periodConfig.current_month === 1 ? 12 : periodConfig.current_month - 1;
-  const defaultYear = periodConfig.current_month === 1 ? periodConfig.current_year - 1 : periodConfig.current_year;
+  const defaultYear = periodConfig.current_year;
   const defaultYearOption = Array.from(yearSel.options).find(opt => Number(opt.value) === defaultYear)
     || Array.from(yearSel.options).find(opt => Number(opt.value) === periodConfig.current_year);
-  const defaultMonthOption = Array.from(monthSel.options).find(opt => Number(opt.value) === defaultMonth)
-    || Array.from(monthSel.options).find(opt => Number(opt.value) === periodConfig.current_month);
+  const defaultMonthOption = Array.from(monthSel.options).find(opt => Number(opt.value) === defaultMonth && !opt.disabled)
+    || Array.from(monthSel.options).find(opt => Number(opt.value) === periodConfig.current_month && !opt.disabled)
+    || Array.from(monthSel.options).find(opt => !opt.disabled);
   if (defaultYearOption) defaultYearOption.selected = true;
   if (defaultMonthOption) defaultMonthOption.selected = true;
 
@@ -2321,6 +2322,13 @@ function renderChoropleth(mapId, features, analyticsData, dxId) {
 
   const min = vals.length ? Math.min(...vals) : 0;
   const max = vals.length ? Math.max(...vals) : 100;
+  const activeLevel = String(document.getElementById('ouLevel')?.value || '1');
+  const selectedIds = new Set(getSelectedValues('ouSelect').map(String));
+  const selectedUnits = (orgUnitsByLevel[activeLevel] || []).filter(unit => selectedIds.has(String(unit.id)));
+  const selectedLabelKeys = new Set();
+  selectedUnits.forEach(unit => {
+    deriveJoinKeys(unit.name).forEach(key => selectedLabelKeys.add(key));
+  });
 
   function getFeatureValue(feature) {
     if (!feature) return null;
@@ -2337,6 +2345,23 @@ function renderChoropleth(mapId, features, analyticsData, dxId) {
       if (key in nameMap) return nameMap[key];
     }
     return null;
+  }
+
+  function isSelectedFeature(feature) {
+    if (!feature || !selectedIds.size) return false;
+    if (feature.id != null && selectedIds.has(String(feature.id))) return true;
+    const props = feature.properties || {};
+    const featureName = props.name || props.displayName || props.LGA || props.State || '';
+    const context = props.State || props.parent || '';
+    const keys = deriveJoinKeys(featureName, context);
+    if (props.LGA && props.State) {
+      keys.add(simplifyJoinKey(`${props.LGA}${props.State}`));
+      keys.add(simplifyJoinKey(`${props.State}${props.LGA}`));
+    }
+    for (const key of keys) {
+      if (selectedLabelKeys.has(key)) return true;
+    }
+    return false;
   }
 
   // Logging join rate
@@ -2367,8 +2392,8 @@ function renderChoropleth(mapId, features, analyticsData, dxId) {
       // Popup for interaction
       layer.bindPopup(`<strong>${unitName}</strong><br/>${indName}: ${val != null ? fmt(val) : 'No data'}`);
       
-      // Permanent Label
-      if (val != null) {
+      // Permanent labels: show only for selected filter units.
+      if (val != null && isSelectedFeature(feature)) {
           layer.bindTooltip(`
             <div class="map-label">
               <div class="map-label-name">${unitName}</div>
@@ -2381,11 +2406,6 @@ function renderChoropleth(mapId, features, analyticsData, dxId) {
             offset: [0, 0],
             opacity: 1
           }).openTooltip();
-      } else {
-        // Label with just name if no data
-        layer.bindTooltip(`<div class="map-label"><div class="map-label-name">${unitName}</div></div>`, { 
-          permanent: true, direction: 'center', className: 'map-label', opacity: 0.6 
-        }).openTooltip();
       }
 
       layer.on('mouseover', function() {
