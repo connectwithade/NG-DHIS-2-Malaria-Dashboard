@@ -1324,6 +1324,41 @@ function normalizeForJoin(name) {
   return n;
 }
 
+function deriveJoinKeys(name, context='') {
+  const keys = new Set();
+  if (!name) return keys;
+
+  const raw = String(name).trim();
+  const normalized = normalizeForJoin(raw);
+  if (normalized) keys.add(normalized);
+
+  const withoutParen = raw.replace(/\(.*?\)/g, ' ').trim();
+  const withoutCommaTail = withoutParen.replace(/\s*,\s*.+$/g, '').trim();
+  const withoutDashTail = withoutCommaTail.replace(/\s*-\s*.+$/g, '').trim();
+  const withoutAdminSuffix = withoutDashTail
+    .replace(/\s+local government area$/i, '')
+    .replace(/\s+municipal area council$/i, '')
+    .replace(/\s+area council$/i, '')
+    .replace(/\s+lga$/i, '')
+    .trim();
+
+  [withoutParen, withoutCommaTail, withoutDashTail, withoutAdminSuffix].forEach(variant => {
+    const k = normalizeForJoin(variant);
+    if (k) keys.add(k);
+  });
+
+  if (context) {
+    const c = normalizeForJoin(context);
+    const b = normalizeForJoin(withoutAdminSuffix || raw);
+    if (b && c) {
+      keys.add(`${b} ${c}`);
+      keys.add(`${c} ${b}`);
+    }
+  }
+
+  return keys;
+}
+
 function setActiveOrgLevel(level) {
   document.getElementById('ouLevel').value = String(level);
   document.querySelectorAll('.ou-level').forEach(section => {
@@ -2127,12 +2162,15 @@ async function loadExplorerMaps() {
     if (parent) geoQuery.set('parent', parent);
     if (group) geoQuery.set('group', group);
 
-    const [geoData, analyticsData] = await Promise.all([
-      apiFetch(`/api/geo?${geoQuery.toString()}`),
-      apiFetch(`/api/analytics?dx=${encodeURIComponent(dxIds)}&ou=${encodeURIComponent(ou)}&pe=${encodeURIComponent(pe)}`)
-    ]);
+	    const [geoData, analyticsData] = await Promise.all([
+	      apiFetch(`/api/geo?${geoQuery.toString()}`),
+	      apiFetch(`/api/analytics?dx=${encodeURIComponent(dxIds)}&ou=${encodeURIComponent(ou)}&pe=${encodeURIComponent(pe)}`)
+	    ]);
 
-    if (!geoData || (!geoData.features && !geoData.organisationUnits)) return;
+	    if (!geoData || (!geoData.features && !geoData.organisationUnits)) return;
+	    if (analyticsData?.error || !Array.isArray(analyticsData?.rows)) {
+	      throw new Error(analyticsData?.error || 'Invalid analytics payload for explorer maps');
+	    }
 
     // Handle both GeoJSON and DHIS2 JSON results
     const features = geoData.features || (geoData.organisationUnits || []).map(ou => ({
@@ -2168,6 +2206,10 @@ async function loadExplorerMaps() {
 function renderChoropleth(mapId, features, analyticsData, dxId) {
   const container = document.getElementById(mapId);
   if (!container) return;
+  if (!analyticsData || !Array.isArray(analyticsData.rows) || !Array.isArray(analyticsData.headers)) {
+    container.innerHTML = '<div class="chart-loading" style="height:100%;font-size:12px;">No map data received from DHIS2</div>';
+    return;
+  }
 
   const map = L.map(mapId, {
     attributionControl: false,
@@ -2190,7 +2232,7 @@ function renderChoropleth(mapId, features, analyticsData, dxId) {
   }
 
   const dataMap = {};
-  const nameMap = {}; // Maps normalized name to value
+  const nameMap = {}; // Maps normalized name variants to value
   let vals = [];
   
   const headers = (analyticsData.headers || []).map(h => h.name);
@@ -2203,24 +2245,45 @@ function renderChoropleth(mapId, features, analyticsData, dxId) {
     if (r[dxIdx] === dxId) {
       const ouId = r[ouIdx];
       const val = parseFloat(r[valIdx]);
+      if (!Number.isFinite(val)) return;
       dataMap[ouId] = val;
       vals.push(val);
       
       const ouName = items[ouId]?.name || ouId;
-      nameMap[normalizeForJoin(ouName)] = val;
+      const contextMatch = String(ouName).match(/\(([^)]+)\)|\s*-\s*(.+)$|,\s*(.+)$/);
+      const context = (contextMatch && (contextMatch[1] || contextMatch[2] || contextMatch[3])) || '';
+      deriveJoinKeys(ouName, context).forEach(key => {
+        if (!(key in nameMap)) nameMap[key] = val;
+      });
     }
   });
 
   const min = vals.length ? Math.min(...vals) : 0;
   const max = vals.length ? Math.max(...vals) : 100;
 
+  function getFeatureValue(feature) {
+    if (!feature) return null;
+    if (feature.id != null && dataMap[feature.id] != null) return dataMap[feature.id];
+    const props = feature.properties || {};
+    const featureName = props.name || props.displayName || props.LGA || props.State || '';
+    const context = props.State || props.parent || '';
+    const keys = deriveJoinKeys(featureName, context);
+    if (props.LGA && props.State) {
+      keys.add(normalizeForJoin(`${props.LGA} ${props.State}`));
+      keys.add(normalizeForJoin(`${props.State} ${props.LGA}`));
+    }
+    for (const key of keys) {
+      if (key in nameMap) return nameMap[key];
+    }
+    return null;
+  }
+
   // Logging join rate
-  const matches = features.filter(f => dataMap[f.id] || nameMap[normalizeForJoin(f.properties.name)]).length;
+  const matches = features.filter(f => getFeatureValue(f) != null).length;
   console.log(`[Map Join] ${matches}/${features.length} regions matched for ${dxId}`);
 
   function style(feature) {
-    // Try joining by ID first, then by normalized name
-    const val = dataMap[feature.id] || nameMap[normalizeForJoin(feature.properties.name)] || 0;
+    const val = getFeatureValue(feature) ?? 0;
     return {
       fillColor: getColor(val, min, max),
       weight: 1,
@@ -2233,7 +2296,7 @@ function renderChoropleth(mapId, features, analyticsData, dxId) {
   const geoLayer = L.geoJson({ type: 'FeatureCollection', features }, {
     style: style,
     onEachFeature: (feature, layer) => {
-      const val = dataMap[feature.id] || nameMap[normalizeForJoin(feature.properties.name)];
+      const val = getFeatureValue(feature);
       const unitName = feature.properties.name || 'Unknown';
       const indName = selectedIndicators.find(i => i.dx === dxId)?.name || 'Indicator';
       
