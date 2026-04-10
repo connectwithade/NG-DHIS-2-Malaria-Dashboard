@@ -2279,21 +2279,37 @@ function renderChoropleth(mapId, features, analyticsData, dxId) {
     item.dx === dxId || item.source_uid === dxId || item.id === dxId
   ) || { dx: dxId, source_uid: dxId, id: dxId, name: getExplorerSeriesLabel(dxId) };
 
-  analyticsData.rows.forEach(r => {
-    if (dxMatches(r[dxIdx], indicator)) {
-      const ouId = r[ouIdx];
-      const val = parseFloat(r[valIdx]);
-      if (!Number.isFinite(val)) return;
-      dataMap[ouId] = val;
-      vals.push(val);
-      
-      const ouName = items[ouId]?.name || ouId;
-      const contextMatch = String(ouName).match(/\(([^)]+)\)|\s*-\s*(.+)$|,\s*(.+)$/);
-      const context = (contextMatch && (contextMatch[1] || contextMatch[2] || contextMatch[3])) || '';
-      deriveJoinKeys(ouName, context).forEach(key => {
-        if (!(key in nameMap)) nameMap[key] = val;
-      });
-    }
+  const rows = Array.isArray(analyticsData.rows) ? analyticsData.rows : [];
+  let rowsForIndicator = rows.filter(r => dxMatches(r[dxIdx], indicator));
+
+  // Fallback 1: match by indicator display name in metadata (legacy dashboard behavior).
+  if (!rowsForIndicator.length) {
+    const targetName = normalizeForJoin(indicator.name || '');
+    rowsForIndicator = rows.filter(r => {
+      const rowDx = r[dxIdx];
+      const rowName = items[rowDx]?.name || rowDx;
+      return normalizeForJoin(rowName) === targetName;
+    });
+  }
+
+  // Fallback 2: when only one indicator is selected, use all returned rows.
+  if (!rowsForIndicator.length && selectedIndicators.length === 1) {
+    rowsForIndicator = rows;
+  }
+
+  rowsForIndicator.forEach(r => {
+    const ouId = r[ouIdx];
+    const val = parseFloat(r[valIdx]);
+    if (!Number.isFinite(val)) return;
+    dataMap[ouId] = val;
+    vals.push(val);
+    
+    const ouName = items[ouId]?.name || ouId;
+    const contextMatch = String(ouName).match(/\(([^)]+)\)|\s*-\s*(.+)$|,\s*(.+)$/);
+    const context = (contextMatch && (contextMatch[1] || contextMatch[2] || contextMatch[3])) || '';
+    deriveJoinKeys(ouName, context).forEach(key => {
+      if (!(key in nameMap)) nameMap[key] = val;
+    });
   });
 
   const min = vals.length ? Math.min(...vals) : 0;
