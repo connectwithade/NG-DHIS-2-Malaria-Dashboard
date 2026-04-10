@@ -665,29 +665,31 @@ def periods():
 def geo():
     """
     Fetch GeoJSON boundary data for organization units.
+    Prioritizes local shapefile-derived GeoJSON for States and LGAs.
     Query params: level, parent, group
     """
     level = request.args.get("level")
+    if level == "2":
+        return send_from_directory("static/geo", "states.json")
+    if level == "3":
+        return send_from_directory("static/geo", "lgas.json")
+
+    # Fallback to DHIS2 for other levels (e.g. Ward) or if level not specified
     parent = request.args.get("parent")
     group = request.args.get("group")
     try:
-        params = {
-            "paging": "false",
-        }
-        if level:
-            params["level"] = level
-        if parent:
-            params["parent"] = parent
+        params = {"paging": "false"}
+        if level: params["level"] = level
+        if parent: params["parent"] = parent
         
-        # Priority 1: Try organisationUnits.geojson endpoint
+        geo_params = params.copy()
+        if group:
+            geo_params["filter"] = f"organisationUnitGroups.id:eq:{group}"
+        
         try:
-            geo_params = params.copy()
-            if group:
-                geo_params["filter"] = f"organisationUnitGroups.id:eq:{group}"
             data = dhis2_get("/api/organisationUnits.geojson", geo_params)
             return jsonify(data)
         except Exception:
-            # Priority 2: Fallback to .json with geometry field
             params["fields"] = "id,displayName,geometry"
             if group:
                 params["filter"] = f"organisationUnitGroups.id:eq:{group}"

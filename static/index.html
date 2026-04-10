@@ -552,6 +552,23 @@ body[data-theme="light"] .ou-unit-item.is-selected {
   border: 1px solid var(--border);
   box-shadow: var(--shadow) !important;
 }
+.map-label {
+  background: transparent !important;
+  border: none !important;
+  box-shadow: none !important;
+  color: #fff !important;
+  font-weight: 800 !important;
+  text-align: center !important;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.9), 0 0 5px rgba(0,0,0,0.5) !important;
+  pointer-events: none !important;
+  white-space: nowrap !important;
+}
+.map-label-name { font-size: 8px; text-transform: uppercase; opacity: 0.8; line-height: 1; }
+.map-label-value { font-size: 10px; color: #118DFF; margin-top: 2px; }
+body[data-theme="light"] .map-label {
+  color: #111 !important;
+  text-shadow: 0 1px 3px rgba(255,255,255,0.9), 0 0 5px rgba(255,255,255,0.5) !important;
+}
 .explorer-header { display: flex; align-items: center; gap: 10px; margin-bottom: 12px; }
 .explorer-title { font-size: 14px; font-weight: 700; color: var(--text); }
 .explorer-badge { background: rgba(17,141,255,0.15); border: 1px solid rgba(17,141,255,0.3); color: var(--accent); padding: 3px 10px; border-radius: 10px; font-size: 10px; font-weight: 700; }
@@ -1288,6 +1305,23 @@ function normalizeOrgUnitLabel(name) {
   const compact = String(name).trim();
   if (compact.toLowerCase() === 'ng federal government') return 'Federal Government';
   return compact.replace(/^ng\s+/i, '');
+}
+
+function normalizeForJoin(name) {
+  if (!name) return '';
+  // Convert to lowercase, remove common prefixes/suffixes, and handle common spelling variants
+  let n = name.toLowerCase()
+    .replace(/^ng\s+/i, '')
+    .replace(/\s+state$/i, '')
+    .replace(/\s+lga$/i, '')
+    .replace(/[^a-z0-9]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+  
+  // Specific fixes
+  if (n === 'akwa lbom') n = 'akwa ibom'; // Fix for common l/I confusion
+  if (n === 'fct') n = 'federal capital territory';
+  return n;
 }
 
 function setActiveOrgLevel(level) {
@@ -2151,18 +2185,24 @@ function renderChoropleth(mapId, features, analyticsData, dxId) {
   }
 
   const dataMap = {};
+  const nameMap = {}; // Maps normalized name to value
   let vals = [];
   
   const headers = (analyticsData.headers || []).map(h => h.name);
   const dxIdx = headers.indexOf('dx');
   const ouIdx = headers.indexOf('ou');
   const valIdx = headers.indexOf('value');
+  const items = analyticsData.metaData?.items || {};
 
   analyticsData.rows.forEach(r => {
     if (r[dxIdx] === dxId) {
+      const ouId = r[ouIdx];
       const val = parseFloat(r[valIdx]);
-      dataMap[r[ouIdx]] = val;
+      dataMap[ouId] = val;
       vals.push(val);
+      
+      const ouName = items[ouId]?.name || ouId;
+      nameMap[normalizeForJoin(ouName)] = val;
     }
   });
 
@@ -2170,7 +2210,8 @@ function renderChoropleth(mapId, features, analyticsData, dxId) {
   const max = vals.length ? Math.max(...vals) : 100;
 
   function style(feature) {
-    const val = dataMap[feature.id] || 0;
+    // Try joining by ID first, then by normalized name
+    const val = dataMap[feature.id] || nameMap[normalizeForJoin(feature.properties.name)] || 0;
     return {
       fillColor: getColor(val, min, max),
       weight: 1,
@@ -2183,9 +2224,34 @@ function renderChoropleth(mapId, features, analyticsData, dxId) {
   const geoLayer = L.geoJson({ type: 'FeatureCollection', features }, {
     style: style,
     onEachFeature: (feature, layer) => {
-      const val = dataMap[feature.id];
+      const val = dataMap[feature.id] || nameMap[normalizeForJoin(feature.properties.name)];
+      const unitName = feature.properties.name || 'Unknown';
       const indName = selectedIndicators.find(i => i.dx === dxId)?.name || 'Indicator';
-      layer.bindPopup(`<strong>${feature.properties.name}</strong><br/>${indName}: ${val != null ? fmt(val) : 'No data'}`);
+      
+      // Popup for interaction
+      layer.bindPopup(`<strong>${unitName}</strong><br/>${indName}: ${val != null ? fmt(val) : 'No data'}`);
+      
+      // Permanent Label
+      if (val != null) {
+          layer.bindTooltip(`
+            <div class="map-label">
+              <div class="map-label-name">${unitName}</div>
+              <div class="map-label-value">${fmt(val)}</div>
+            </div>
+          `, { 
+            permanent: true, 
+            direction: 'center', 
+            className: 'map-label',
+            offset: [0, 0],
+            opacity: 1
+          }).openTooltip();
+      } else {
+        // Label with just name if no data
+        layer.bindTooltip(`<div class="map-label"><div class="map-label-name">${unitName}</div></div>`, { 
+          permanent: true, direction: 'center', className: 'map-label', opacity: 0.6 
+        }).openTooltip();
+      }
+
       layer.on('mouseover', function() {
         this.setStyle({ weight: 2, color: '#118DFF', fillOpacity: 0.9 });
       });
