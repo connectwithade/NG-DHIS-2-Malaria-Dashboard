@@ -1324,12 +1324,33 @@ function normalizeForJoin(name) {
   return n;
 }
 
+function applyNameAliases(name) {
+  const n = normalizeForJoin(name);
+  const aliases = {
+    'isuikwuato': 'isuikwato',
+    'obi nwga': 'obi nwa',
+    'umunneochi': 'umu neochi',
+    'girei': 'gireri',
+    'yenagoa': 'yenegoa',
+    'aiyekire gbonyin': 'gbonyin',
+    'ezinihitte mbaise': 'ezinihitte',
+    'birnin kudu': 'birni kudu',
+    'dange shuni': 'dange shuni',
+    'karim lamido': 'karim lamido',
+  };
+  return aliases[n] || n;
+}
+
+function simplifyJoinKey(name) {
+  return applyNameAliases(name).replace(/[^a-z0-9]/g, '');
+}
+
 function deriveJoinKeys(name, context='') {
   const keys = new Set();
   if (!name) return keys;
 
   const raw = String(name).trim();
-  const normalized = normalizeForJoin(raw);
+  const normalized = simplifyJoinKey(raw);
   if (normalized) keys.add(normalized);
 
   const withoutParen = raw.replace(/\(.*?\)/g, ' ').trim();
@@ -1343,16 +1364,16 @@ function deriveJoinKeys(name, context='') {
     .trim();
 
   [withoutParen, withoutCommaTail, withoutDashTail, withoutAdminSuffix].forEach(variant => {
-    const k = normalizeForJoin(variant);
+    const k = simplifyJoinKey(variant);
     if (k) keys.add(k);
   });
 
   if (context) {
-    const c = normalizeForJoin(context);
-    const b = normalizeForJoin(withoutAdminSuffix || raw);
+    const c = simplifyJoinKey(context);
+    const b = simplifyJoinKey(withoutAdminSuffix || raw);
     if (b && c) {
-      keys.add(`${b} ${c}`);
-      keys.add(`${c} ${b}`);
+      keys.add(simplifyJoinKey(`${b}${c}`));
+      keys.add(simplifyJoinKey(`${c}${b}`));
     }
   }
 
@@ -2286,8 +2307,8 @@ function renderChoropleth(mapId, features, analyticsData, dxId) {
     const context = props.State || props.parent || '';
     const keys = deriveJoinKeys(featureName, context);
     if (props.LGA && props.State) {
-      keys.add(normalizeForJoin(`${props.LGA} ${props.State}`));
-      keys.add(normalizeForJoin(`${props.State} ${props.LGA}`));
+      keys.add(simplifyJoinKey(`${props.LGA}${props.State}`));
+      keys.add(simplifyJoinKey(`${props.State}${props.LGA}`));
     }
     for (const key of keys) {
       if (key in nameMap) return nameMap[key];
