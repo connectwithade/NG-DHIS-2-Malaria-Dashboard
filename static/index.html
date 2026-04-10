@@ -2109,55 +2109,60 @@ function clearExplorerMaps() {
   if (container) container.innerHTML = '';
 }
 
-async function loadExplorerMaps(analyticsData) {
+async function loadExplorerMaps() {
   clearExplorerMaps();
-  if (!selectedIndicators.length || !analyticsData || !analyticsData.rows) return;
+  if (!selectedIndicators.length) return;
 
   const level = document.getElementById('ouLevel').value || '1';
   const parentScope = getNearestParentSelections(level);
   const parent = parentScope?.ids?.[0];
+  const group = document.getElementById('ouGroup')?.value;
+  const ou = getOU();
+  const pe = getPE();
+  const dxIds = uniqueDx(selectedIndicators).join(';');
   
-  // Fetch GeoJSON
-  let geoData = null;
+  // Fetch GeoJSON and Analytics in parallel for speed
   try {
-    const group = document.getElementById('ouGroup')?.value;
     const geoQuery = new URLSearchParams({ level: String(level) });
     if (parent) geoQuery.set('parent', parent);
     if (group) geoQuery.set('group', group);
-    geoData = await apiFetch(`/api/geo?${geoQuery.toString()}`);
+
+    const [geoData, analyticsData] = await Promise.all([
+      apiFetch(`/api/geo?${geoQuery.toString()}`),
+      apiFetch(`/api/analytics?dx=${encodeURIComponent(dxIds)}&ou=${encodeURIComponent(ou)}&pe=${encodeURIComponent(pe)}`)
+    ]);
+
+    if (!geoData || (!geoData.features && !geoData.organisationUnits)) return;
+
+    // Handle both GeoJSON and DHIS2 JSON results
+    const features = geoData.features || (geoData.organisationUnits || []).map(ou => ({
+      type: 'Feature',
+      id: ou.id,
+      geometry: ou.geometry,
+      properties: { id: ou.id, name: ou.displayName }
+    })).filter(f => f.geometry);
+
+    const container = document.getElementById('explorerMaps');
+    
+    selectedIndicators.forEach((ind, idx) => {
+      const mapCard = document.createElement('div');
+      mapCard.className = 'explorer-map-card';
+      const mapId = `map-${idx}-${Date.now()}`;
+      
+      mapCard.innerHTML = `
+        <div class="explorer-map-header">
+          <div class="explorer-map-title">${ind.name}</div>
+        </div>
+        <div id="${mapId}" class="explorer-map-container"></div>
+        <div id="${mapId}-legend" class="map-legend"></div>
+      `;
+      container.appendChild(mapCard);
+      
+      setTimeout(() => renderChoropleth(mapId, features, analyticsData, ind.dx), 10);
+    });
   } catch(e) {
-    console.error('GeoJSON fetch failed', e);
-    return;
+    console.error('Explorer map initialization failed', e);
   }
-
-  if (!geoData || (!geoData.features && !geoData.organisationUnits)) return;
-
-  // Handle both GeoJSON and DHIS2 JSON results
-  const features = geoData.features || (geoData.organisationUnits || []).map(ou => ({
-    type: 'Feature',
-    id: ou.id,
-    geometry: ou.geometry,
-    properties: { id: ou.id, name: ou.displayName }
-  })).filter(f => f.geometry);
-
-  const container = document.getElementById('explorerMaps');
-  
-  selectedIndicators.forEach((ind, idx) => {
-    const mapCard = document.createElement('div');
-    mapCard.className = 'explorer-map-card';
-    const mapId = `map-${idx}-${Date.now()}`;
-    
-    mapCard.innerHTML = `
-      <div class="explorer-map-header">
-        <div class="explorer-map-title">${ind.name}</div>
-      </div>
-      <div id="${mapId}" class="explorer-map-container"></div>
-      <div id="${mapId}-legend" class="map-legend"></div>
-    `;
-    container.appendChild(mapCard);
-    
-    setTimeout(() => renderChoropleth(mapId, features, analyticsData, ind.dx), 10);
-  });
 }
 
 function renderChoropleth(mapId, features, analyticsData, dxId) {
@@ -2208,6 +2213,10 @@ function renderChoropleth(mapId, features, analyticsData, dxId) {
 
   const min = vals.length ? Math.min(...vals) : 0;
   const max = vals.length ? Math.max(...vals) : 100;
+
+  // Logging join rate
+  const matches = features.filter(f => dataMap[f.id] || nameMap[normalizeForJoin(f.properties.name)]).length;
+  console.log(`[Map Join] ${matches}/${features.length} regions matched for ${dxId}`);
 
   function style(feature) {
     // Try joining by ID first, then by normalized name
@@ -2311,8 +2320,8 @@ async function loadExplorerChart() {
   try {
     const data = await apiFetch(`${endpoint}?dx=${encodeURIComponent(dxIds)}&ou=${encodeURIComponent(ou)}&pe=${encodeURIComponent(pe)}`);
     renderExplorerChartFromAnalytics(data, { compareByOrgUnit, multiplePeriods, xAxisMode });
-    // Also load maps
-    loadExplorerMaps(data);
+    // Also load maps (now independent)
+    loadExplorerMaps();
   } catch(e) {
     setChartMessage('explorerChartWrap', 'explorerChart', 'Unable to load explorer data from DHIS2');
     clearExplorerMaps();
