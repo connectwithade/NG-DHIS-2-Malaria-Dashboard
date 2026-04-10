@@ -2245,8 +2245,21 @@ function renderChoropleth(mapId, features, analyticsData, dxId) {
     return;
   }
 
+  function dxMatches(rowDx, indicator) {
+    const row = String(rowDx || '');
+    if (!row || !indicator) return false;
+    const candidates = [indicator.dx, indicator.source_uid, indicator.id]
+      .map(item => String(item || '').trim())
+      .filter(Boolean);
+    return candidates.some(candidate => row === candidate || row.startsWith(`${candidate}.`));
+  }
+
+  const indicator = selectedIndicators.find(item =>
+    item.dx === dxId || item.source_uid === dxId || item.id === dxId
+  ) || { dx: dxId, source_uid: dxId, id: dxId, name: getExplorerSeriesLabel(dxId) };
+
   analyticsData.rows.forEach(r => {
-    if (r[dxIdx] === dxId) {
+    if (dxMatches(r[dxIdx], indicator)) {
       const ouId = r[ouIdx];
       const val = parseFloat(r[valIdx]);
       if (!Number.isFinite(val)) return;
@@ -2284,7 +2297,7 @@ function renderChoropleth(mapId, features, analyticsData, dxId) {
 
   // Logging join rate
   const matches = features.filter(f => getFeatureValue(f) != null).length;
-  console.log(`[Map Join] ${matches}/${features.length} regions matched for ${dxId}`);
+  console.log(`[Map Join] ${matches}/${features.length} regions matched for ${indicator.dx || dxId}`);
   if (!matches) {
     container.insertAdjacentHTML('beforeend', '<div style="position:absolute;bottom:10px;left:10px;z-index:900;background:rgba(12,16,24,.88);color:#cfd6e3;border:1px solid rgba(143,176,230,.35);padding:6px 8px;border-radius:8px;font-size:11px;">No matched values for selected area/period</div>');
   }
@@ -2305,7 +2318,7 @@ function renderChoropleth(mapId, features, analyticsData, dxId) {
     onEachFeature: (feature, layer) => {
       const val = getFeatureValue(feature);
       const unitName = feature.properties.name || 'Unknown';
-      const indName = selectedIndicators.find(i => i.dx === dxId)?.name || 'Indicator';
+      const indName = indicator.name || 'Indicator';
       
       // Popup for interaction
       layer.bindPopup(`<strong>${unitName}</strong><br/>${indName}: ${val != null ? fmt(val) : 'No data'}`);
@@ -2567,7 +2580,7 @@ function renderExplorerChartFromAnalytics(data, options={}) {
   }));
 
   if (forceOrgAxis || compareByOrgUnit) {
-    const barOptions = parsed.labels.length > 6 ? { indexAxis: 'y' } : {};
+    const barOptions = {};
     renderBarChart('explorerChart', 'explorerChartWrap', parsed.labels, parsed.datasets, barOptions);
   } else if (forcePeriodAxis || multiplePeriods) {
     renderLineChart('explorerChart', 'explorerChartWrap', parsed.labels, parsed.datasets, false);
