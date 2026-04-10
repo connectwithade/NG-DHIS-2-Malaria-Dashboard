@@ -676,24 +676,55 @@ def geo():
 
     # Fallback to DHIS2 for other levels (e.g. Ward) or if level not specified
     parent = request.args.get("parent")
+    parents = [item for item in request.args.get("parents", "").split(",") if item]
+    descendants = request.args.get("descendants", "").lower() in {"1", "true", "yes"}
     group = request.args.get("group")
     try:
         params = {"paging": "false"}
         if level: params["level"] = level
-        if parent: params["parent"] = parent
+        if parent and not parents:
+            parents = [parent]
+        if parent and not descendants and len(parents) <= 1:
+            params["parent"] = parent
         
         geo_params = params.copy()
         if group:
             geo_params["filter"] = f"organisationUnitGroups.id:eq:{group}"
         
         try:
-            data = dhis2_get("/api/organisationUnits.geojson", geo_params)
+            if parents and descendants:
+                fetch_params = geo_params.copy()
+                if "parent" in fetch_params:
+                    del fetch_params["parent"]
+                data = dhis2_get("/api/organisationUnits.geojson", fetch_params)
+                features = data.get("features", [])
+                parent_set = set(parents)
+                filtered = []
+                for feature in features:
+                    props = feature.get("properties", {})
+                    path_value = props.get("path") or props.get("ouPath") or ""
+                    if not path_value:
+                        filtered.append(feature)
+                        continue
+                    path = f"{path_value}/"
+                    if any(f"/{parent_id}/" in path for parent_id in parent_set):
+                        filtered.append(feature)
+                data["features"] = filtered
+            else:
+                data = dhis2_get("/api/organisationUnits.geojson", geo_params)
             return jsonify(data)
         except Exception:
             params["fields"] = "id,displayName,geometry"
             if group:
                 params["filter"] = f"organisationUnitGroups.id:eq:{group}"
             data = dhis2_get("/api/organisationUnits.json", params)
+            if parents and descendants:
+                parent_set = set(parents)
+                units = data.get("organisationUnits", [])
+                data["organisationUnits"] = [
+                    unit for unit in units
+                    if any(f"/{parent_id}/" in f"{unit.get('path', '')}/" for parent_id in parent_set)
+                ]
             return jsonify(data)
     except Exception as exc:
         return json_error(str(exc), 500)

@@ -2180,6 +2180,7 @@ async function loadExplorerMaps() {
   const level = document.getElementById('ouLevel').value || '1';
   const parentScope = getNearestParentSelections(level);
   const parent = parentScope?.ids?.[0];
+  const parents = parentScope?.ids || [];
   const group = document.getElementById('ouGroup')?.value;
   const ou = getOU();
   const pe = getPE();
@@ -2188,7 +2189,12 @@ async function loadExplorerMaps() {
   // Fetch GeoJSON and Analytics in parallel for speed
   try {
     const geoQuery = new URLSearchParams({ level: String(level) });
-    if (parent) geoQuery.set('parent', parent);
+    if (parents.length) {
+      geoQuery.set('parents', parents.join(','));
+      geoQuery.set('descendants', 'true');
+    } else if (parent) {
+      geoQuery.set('parent', parent);
+    }
     if (group) geoQuery.set('group', group);
 
 	    const [geoData, analyticsData] = await Promise.all([
@@ -2382,8 +2388,21 @@ function renderChoropleth(mapId, features, analyticsData, dxId) {
     };
   }
 
+  function pointStyle(feature) {
+    const val = getFeatureValue(feature);
+    return {
+      radius: val == null ? 4 : (min === max ? 6 : Math.max(4, Math.min(11, 4 + ((val - min) / Math.max(1e-9, max - min)) * 7))),
+      fillColor: val == null ? '#5b6475' : getColor(val, min, max),
+      color: isDark ? '#cfd6e3' : '#243042',
+      weight: 1,
+      opacity: 1,
+      fillOpacity: val == null ? 0.45 : 0.9
+    };
+  }
+
   const geoLayer = L.geoJson({ type: 'FeatureCollection', features }, {
     style: style,
+    pointToLayer: (feature, latlng) => L.circleMarker(latlng, pointStyle(feature)),
     onEachFeature: (feature, layer) => {
       const val = getFeatureValue(feature);
       const unitName = feature.properties.name || 'Unknown';
@@ -2409,7 +2428,9 @@ function renderChoropleth(mapId, features, analyticsData, dxId) {
       }
 
       layer.on('mouseover', function() {
-        this.setStyle({ weight: 2, color: '#118DFF', fillOpacity: 0.9 });
+        if (typeof this.setStyle === 'function') {
+          this.setStyle({ weight: 2, color: '#118DFF', fillOpacity: 0.95 });
+        }
       });
       layer.on('mouseout', function() {
         geoLayer.resetStyle(this);
