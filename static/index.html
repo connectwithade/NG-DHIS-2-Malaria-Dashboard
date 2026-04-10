@@ -2240,6 +2240,10 @@ function renderChoropleth(mapId, features, analyticsData, dxId) {
   const ouIdx = getColumnIndex(headers, ['ou', 'organisationunit']);
   const valIdx = getColumnIndex(headers, ['value', 'val']);
   const items = analyticsData.metaData?.items || {};
+  if (dxIdx < 0 || ouIdx < 0 || valIdx < 0) {
+    container.innerHTML = '<div class="chart-loading" style="height:100%;font-size:12px;">Could not map DHIS2 analytics columns for explorer map</div>';
+    return;
+  }
 
   analyticsData.rows.forEach(r => {
     if (r[dxIdx] === dxId) {
@@ -2281,15 +2285,18 @@ function renderChoropleth(mapId, features, analyticsData, dxId) {
   // Logging join rate
   const matches = features.filter(f => getFeatureValue(f) != null).length;
   console.log(`[Map Join] ${matches}/${features.length} regions matched for ${dxId}`);
+  if (!matches) {
+    container.insertAdjacentHTML('beforeend', '<div style="position:absolute;bottom:10px;left:10px;z-index:900;background:rgba(12,16,24,.88);color:#cfd6e3;border:1px solid rgba(143,176,230,.35);padding:6px 8px;border-radius:8px;font-size:11px;">No matched values for selected area/period</div>');
+  }
 
   function style(feature) {
-    const val = getFeatureValue(feature) ?? 0;
+    const val = getFeatureValue(feature);
     return {
-      fillColor: getColor(val, min, max),
+      fillColor: val == null ? '#5b6475' : getColor(val, min, max),
       weight: 1,
       opacity: 1,
       color: isDark ? '#2a3347' : '#fff',
-      fillOpacity: 0.8
+      fillOpacity: val == null ? 0.35 : 0.8
     };
   }
 
@@ -2392,8 +2399,11 @@ async function loadExplorerChart() {
 }
 
 function getColumnIndex(headers, aliases) {
-  const h = (headers || []).map(item => String(item).toLowerCase());
-  const a = aliases.map(item => String(item).toLowerCase());
+  const normalize = (value) => String(value || '')
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, '');
+  const h = (headers || []).map(normalize);
+  const a = aliases.map(normalize);
   return h.findIndex(header => a.includes(header));
 }
 
@@ -2614,6 +2624,7 @@ function renderBarChart(canvasId, wrapId, labels, datasets, extra={}) {
       ...opts.scales.y.ticks,
       autoSkip: false,
       font: { size: 11 },
+      callback: (value, index, ticks) => ticks?.[index]?.label || labels?.[index] || String(value),
     };
     opts.scales.x.ticks = {
       ...opts.scales.x.ticks,
