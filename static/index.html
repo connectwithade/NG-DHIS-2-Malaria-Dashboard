@@ -1807,7 +1807,10 @@ async function loadPeriods() {
   if (defaultYearOption) defaultYearOption.selected = true;
   if (defaultMonthOption) defaultMonthOption.selected = true;
 
-  document.getElementById('periodHint').textContent = `Years 2018-${periodConfig.current_year} confirmed from DHIS2. Current server period: ${periodConfig.server_date}.`;
+  const periodDateNote = periodConfig.date_source === 'dashboard'
+    ? `Available through ${periodConfig.current_date}; cached DHIS2 server date: ${periodConfig.server_date}.`
+    : `Current DHIS2 server period: ${periodConfig.server_date}.`;
+  document.getElementById('periodHint').textContent = `Years 2018-${periodConfig.current_year}. ${periodDateNote}`;
 }
 
 // ── Dashboard config & indicators ────────────────────────────────────────────

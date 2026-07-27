@@ -272,7 +272,11 @@ def parse_server_datetime(server_date: Optional[str]):
 
 
 def build_period_options(server_date: Optional[str] = None, start_year: int = 2018):
-    current = parse_server_datetime(server_date)
+    dhis2_current = parse_server_datetime(server_date)
+    local_current = datetime.now(dhis2_current.tzinfo or timezone.utc)
+    # The persisted DHIS2 system info can be older than the running dashboard.
+    # Do not let that cached timestamp hide months that have since begun.
+    current = max(dhis2_current, local_current, key=lambda value: (value.year, value.month))
     months = []
     for month in range(1, 13):
         month_date = datetime(current.year, month, 1, tzinfo=current.tzinfo)
@@ -288,7 +292,9 @@ def build_period_options(server_date: Optional[str] = None, start_year: int = 20
     ]
 
     return {
-        "server_date": current.date().isoformat(),
+        "server_date": dhis2_current.date().isoformat(),
+        "current_date": current.date().isoformat(),
+        "date_source": "dhis2" if current is dhis2_current else "dashboard",
         "start_year": start_year,
         "current_year": current.year,
         "current_month": current.month,
