@@ -1797,7 +1797,7 @@ async function loadPeriods() {
     monthSel.appendChild(opt);
   });
 
-  const defaultMonth = periodConfig.current_month === 1 ? 12 : periodConfig.current_month - 1;
+  const defaultMonth = periodConfig.current_month;
   const defaultYear = periodConfig.current_year;
   const defaultYearOption = Array.from(yearSel.options).find(opt => Number(opt.value) === defaultYear)
     || Array.from(yearSel.options).find(opt => Number(opt.value) === periodConfig.current_year);
