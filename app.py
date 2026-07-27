@@ -8,6 +8,7 @@ import time
 import csv
 from datetime import datetime, timezone
 from typing import Optional
+from zoneinfo import ZoneInfo
 
 from flask import Flask, jsonify, request, send_from_directory
 from flask_cors import CORS
@@ -260,23 +261,8 @@ def utc_now_iso():
     return datetime.now(timezone.utc).isoformat()
 
 
-def parse_server_datetime(server_date: Optional[str]):
-    if not server_date:
-        return datetime.now(timezone.utc)
-    normalized = server_date.replace("Z", "+00:00")
-    try:
-        dt = datetime.fromisoformat(normalized)
-        return dt if dt.tzinfo else dt.replace(tzinfo=timezone.utc)
-    except ValueError:
-        return datetime.now(timezone.utc)
-
-
-def build_period_options(server_date: Optional[str] = None, start_year: int = 2018):
-    dhis2_current = parse_server_datetime(server_date)
-    local_current = datetime.now(dhis2_current.tzinfo or timezone.utc)
-    # The persisted DHIS2 system info can be older than the running dashboard.
-    # Do not let that cached timestamp hide months that have since begun.
-    current = max(dhis2_current, local_current, key=lambda value: (value.year, value.month))
+def build_period_options(start_year: int = 2018, current: Optional[datetime] = None):
+    current = current or datetime.now(ZoneInfo("Africa/Lagos"))
     months = []
     for month in range(1, 13):
         month_date = datetime(current.year, month, 1, tzinfo=current.tzinfo)
@@ -292,9 +278,8 @@ def build_period_options(server_date: Optional[str] = None, start_year: int = 20
     ]
 
     return {
-        "server_date": dhis2_current.date().isoformat(),
         "current_date": current.date().isoformat(),
-        "date_source": "dhis2" if current is dhis2_current else "dashboard",
+        "timezone": "Africa/Lagos",
         "start_year": start_year,
         "current_year": current.year,
         "current_month": current.month,
@@ -661,10 +646,8 @@ def data_elements():
 
 @app.route("/api/meta/periods")
 def periods():
-    """Return period options aligned to the DHIS2 server date."""
-    state = load_sync_state()
-    server_date = (state.get("dhis2_info") or {}).get("serverDate")
-    return jsonify(build_period_options(server_date))
+    """Return period options aligned to the dashboard's Lagos calendar."""
+    return jsonify(build_period_options())
 
 
 @app.route("/api/geo")
